@@ -7,6 +7,20 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Vite 5.0 対応
+
+Vite 5.0において、build時に生成される`manifest.json`のディレクトリが変更されました。
+build直下 → build/.vite直下
+
+そのため、`composer install`後に、`vendor/laravel/framework/src/Illuminate/Foundation/Vite.php`の725行目を以下のように変更してください。
+
+```php
+// 725行目
+return public_path($buildDirectory.'/'.$this->manifestFilename);
+↓
+return public_path($buildDirectory.'/.vite/'.$this->manifestFilename);
+```
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

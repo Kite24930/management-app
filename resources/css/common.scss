@@ -1,0 +1,83 @@
+@import "./app.css";
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap');
+@import "bootstrap-icons/font/bootstrap-icons.min.css";
+@import "@toast-ui/editor/dist/toastui-editor-viewer.css";
+//font-family: 'Rubik Doodle Shadow', system-ui;
+
+* {
+    color: #333;
+}
+
+root {
+    --primary-color: #333;
+    --slate-color: #626d71;
+    --ceramic: #cdcdc0;
+    --latte-color: #ddbc95;
+    --coffee-color: #b38867;
+    --decoration-font: 'Rubik Doodle Shadow', system-ui;
+}
+
+.eng-deco {
+    font-family: 'Rubik Doodle Shadow', system-ui;
+}
+
+.text-slate {
+    color: #626d71;
+}
+
+.text-ceramic {
+    color: #cdcdc0;
+}
+
+.text-latte {
+    color: #ddbc95;
+}
+
+.text-coffee {
+    color: #b38867;
+}
+
+.bg-slate {
+    background-color: #626d71;
+}
+
+.bg-ceramic {
+    background-color: #cdcdc0;
+}
+
+.bg-latte {
+    background-color: #ddbc95;
+}
+
+.bg-coffee {
+    background-color: #b38867;
+}
+
+body {
+    padding-left: 10px;
+}
+
+header {
+    * {
+        color: #626d71;
+    }
+
+    &.hide {
+        left: -310px;
+    }
+
+    #headerToggleButton {
+        .text {
+            -ms-writing-mode: tb-rl;
+            writing-mode: vertical-rl;
+            text-orientation: sideways;
+        }
+    }
+}
+
+main {
+    transition-duration: 500ms;
+    &.full {
+        padding-left: 10px;
+    }
+}
