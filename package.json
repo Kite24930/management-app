@@ -24,6 +24,7 @@
         "flowbite": "^2.2.1",
         "jsqr": "^1.4.0",
         "qr-code-styling": "^1.6.0-rc.1",
+        "sortablejs": "^1.15.1",
         "swiper": "^11.0.5"
     }
 }

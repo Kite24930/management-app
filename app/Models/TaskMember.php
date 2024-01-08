@@ -11,6 +11,7 @@ class TaskMember extends Model
 
     protected $fillable = [
         'task_id',
+        'member_id',
         'is_main_person',
     ];
 }

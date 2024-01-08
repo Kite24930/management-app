@@ -21,6 +21,8 @@ export default defineConfig({
                 commonStyles: 'resources/css/common.css',
                 index: 'resources/js/index.js',
                 indexStyles: 'resources/css/index.css',
+                tasks: 'resources/js/tasks.js',
+                tasksStyles: 'resources/css/tasks.css',
             },
         },
     }

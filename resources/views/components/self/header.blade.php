@@ -1,13 +1,13 @@
-<header id="header" class="flex md:flex-col flex-row gap-2 bg-ceramic fixed left-0 md:w-80 w-full p-0 md:border-r md:h-full h-auto justify-between md:justify-start duration-500">
+<header id="header" class="flex md:flex-col flex-row gap-2 bg-ceramic fixed left-0 md:w-80 w-full p-0 md:border-r md:h-full h-auto justify-between md:justify-start duration-500 z-50 hide">
     <div class="w-full h-full m-0 p-2 flex md:flex-col flex-row gap-2 justify-between md:justify-start relative">
         <button id="headerToggleButton" class="absolute top-10 -right-6 w-6 h-24 rounded-r-md bg-ceramic border-t border-r border-b md:flex hidden items-center justify-center">
-            <div id="toggleHide">
+            <div id="toggleHide" class="hidden">
                 <x-symbols.double-arrow-left />
                 <span class="text">
                     close
                 </span>
             </div>
-            <div id="toggleShow" class="hidden">
+            <div id="toggleShow" class="">
                 <x-symbols.double-arrow-right />
                 <span class="text">
                     show

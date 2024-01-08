@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('task_logs', function (Blueprint $table) {
             $table->id();
+            $table->string('title')->comment('タスク名');
+            $table->integer('task_id')->comment('タスクID');
             $table->integer('parent_id')->comment('親タスクID');
             $table->integer('type')->comment('タスクタイプ');
             $table->longText('description')->nullable()->comment('タスク内容');

@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Department;
+use App\Models\TaskType;
+use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // 共有変数
+        $users = User::all();
+        $departments = Department::all();
+        $task_types = TaskType::all();
+        view()->share(compact('users', 'departments', 'task_types'));
     }
 }

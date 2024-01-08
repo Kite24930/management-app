@@ -15,8 +15,24 @@ root {
   --decoration-font: "Rubik Doodle Shadow", system-ui;
 }
 
+@font-face {
+  font-family: "Aoharu Marker";
+  src: url("/storage/fonts/aoharu-marker-mini.otf");
+}
+@font-face {
+  font-family: "Chillout";
+  src: url("/storage/fonts/ChilloutTYP-Regular.otf");
+}
 .eng-deco {
   font-family: "Rubik Doodle Shadow", system-ui;
+}
+
+.aoharu {
+  font-family: "Aoharu Marker", system-ui;
+}
+
+.chillout {
+  font-family: "Chillout", system-ui;
 }
 
 .text-slate {
@@ -58,8 +74,10 @@ body {
 header * {
   color: #626d71;
 }
-header.hide {
-  left: -310px;
+@media (min-width: 768px) {
+  header.hide {
+    left: -310px;
+  }
 }
 header #headerToggleButton .text {
   -ms-writing-mode: tb-rl;

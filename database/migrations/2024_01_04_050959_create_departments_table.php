@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -17,6 +18,11 @@ return new class extends Migration
             $table->integer('parent_department')->comment('親部署ID');
             $table->timestamps();
         });
+
+        Artisan::call('db:seed', [
+            '--class' => 'DepartmentSeeder',
+            '--force' => true,
+        ]);
     }
 
     /**

@@ -10,6 +10,8 @@ class TaskLog extends Model
     use HasFactory;
 
     protected $fillable = [
+        'task_id',
+        'title',
         'parent_id',
         'type',
         'description',

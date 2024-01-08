@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('task_members', function (Blueprint $table) {
             $table->id();
+            $table->integer('member_id')->comment('ユーザーID');
             $table->foreignId('task_id')->constrained()->onDelete('cascade')->comment('タスクID');
             $table->tinyinteger('is_main_person')->comment('メイン担当者かどうか');
             $table->timestamps();
