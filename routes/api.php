@@ -21,15 +21,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/addTask', [ApiController::class, 'addTask'])->name('addTask');
 Route::post('/addTask', [ApiController::class, 'addTaskPost'])->name('addTask');
+Route::post('/taskStatusEdit', [ApiController::class, 'taskStatusEdit'])->name('taskStatusEdit');
 Route::post('/taskTitleEdit', [ApiController::class, 'taskTitleEdit'])->name('taskTitleEdit');
 Route::post('/taskTypeEdit', [ApiController::class, 'taskTypeEdit'])->name('taskTypeEdit');
 Route::post('/taskPriorityEdit', [ApiController::class, 'taskPriorityEdit'])->name('taskPriorityEdit');
 Route::post('/taskMainMemberEdit', [ApiController::class, 'taskMainMemberEdit'])->name('taskMainMemberEdit');
 Route::post('/taskStartDateEdit', [ApiController::class, 'taskStartDateEdit'])->name('taskStartDateEdit');
+Route::post('/taskStartDateClear', [ApiController::class, 'taskStartDateClear'])->name('taskStartDateClear');
 Route::post('/taskEndDateEdit', [ApiController::class, 'taskEndDateEdit'])->name('taskEndDateEdit');
+Route::post('/taskEndDateClear', [ApiController::class, 'taskEndDateClear'])->name('taskEndDateClear');
 Route::post('/taskTypeChange', [ApiController::class, 'taskTypeChange'])->name('taskTypeChange');
 Route::post('/taskPriorityChange', [ApiController::class, 'taskPriorityChange'])->name('taskPriorityChange');
 Route::post('/taskMainMemberChange', [ApiController::class, 'taskMainMemberChange'])->name('taskMainMemberChange');
 Route::post('/taskEdit', [ApiController::class, 'taskEdit'])->name('taskEdit');
 Route::post('/taskMemberEdit', [ApiController::class, 'taskMemberEdit'])->name('taskMemberEdit');
 Route::post('/taskOrderPost', [ApiController::class, 'taskOrderPost'])->name('taskOrderPost');
+Route::post('/taskDescriptionEdit', [ApiController::class, 'taskDescriptionEdit'])->name('taskDescriptionEdit');

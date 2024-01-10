@@ -9,6 +9,7 @@ use App\Models\CommentList;
 use App\Models\CompletedList;
 use App\Models\CompletedTask;
 use App\Models\Department;
+use App\Models\MemberList;
 use App\Models\OtherList;
 use App\Models\OtherTask;
 use App\Models\PendingList;
@@ -132,6 +133,69 @@ class ApiController extends Controller
         }
     }
 
+    function taskStatusEdit(Request $request) {
+        $request->validate([
+            'status' => 'required',
+            'task_id' => 'required',
+        ]);
+        try {
+            DB::beginTransaction();
+            $task = Task::find($request->task_id)->update([
+                'status' => $request->status,
+            ]);
+            $task_id = $request->task_id;
+            ToDoTask::where('task_id', $request->task_id)->delete();
+            ProgressTask::where('task_id', $request->task_id)->delete();
+            PendingTask::where('task_id', $request->task_id)->delete();
+            CompletedTask::where('task_id', $request->task_id)->delete();
+            OtherTask::where('task_id', $request->task_id)->delete();
+            CancelTask::where('task_id', $request->task_id)->delete();
+            switch ($request->status) {
+                case 0:
+                    $todo = ToDoTask::create([
+                        'task_id' => $task_id,
+                    ]);
+                    break;
+                case 1:
+                    $progress = ProgressTask::create([
+                        'task_id' => $task_id,
+                    ]);
+                    break;
+                case 2:
+                    $pending = PendingTask::create([
+                        'task_id' => $task_id,
+                    ]);
+                    break;
+                case 3:
+                    $completed = CompletedTask::create([
+                        'task_id' => $task_id,
+                    ]);
+                    break;
+                case 4:
+                    $other = OtherTask::create([
+                        'task_id' => $task_id,
+                    ]);
+                    break;
+                case 5:
+                    $cancel = CancelTask::create([
+                        'task_id' => $task_id,
+                    ]);
+                    break;
+            }
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Task status updated successfully',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update task status'. $e->getMessage(),
+            ]);
+        }
+    }
+
     function taskTitleEdit(Request $request) {
         $request->validate([
             'title' => 'required',
@@ -243,11 +307,13 @@ class ApiController extends Controller
                 ['is_main_person' => 1]
             );
             $user = User::find($request->member_id);
+            $members = MemberList::where('task_id', $request->task_id)->whereNot('is_main_person', 1)->get();
             DB::commit();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Task main member updated successfully',
                 'user' => $user,
+                'members' => $members,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -279,6 +345,26 @@ class ApiController extends Controller
         }
     }
 
+    function taskStartDateClear(Request $request) {
+        $request->validate([
+            'task_id' => 'required',
+        ]);
+        try {
+            $task = Task::find($request->task_id)->update(
+                ['start_date' => null]
+            );
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Task start date cleared successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to clear task start date:'. $e->getMessage(),
+            ]);
+        }
+    }
+
     function taskEndDateEdit(Request $request) {
         $request->validate([
             'end_date' => 'required',
@@ -296,6 +382,26 @@ class ApiController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to update task end date:'. $e->getMessage(),
+            ]);
+        }
+    }
+
+    function taskEndDateClear(Request $request) {
+        $request->validate([
+            'task_id' => 'required',
+        ]);
+        try {
+            $task = Task::find($request->task_id)->update(
+                ['end_date' => null]
+            );
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Task end date cleared successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to clear task end date:'. $e->getMessage(),
             ]);
         }
     }
@@ -386,7 +492,7 @@ class ApiController extends Controller
                 $parent_task[] = TaskList::find($targetTask->parent_id);
             }
             $member_list = TaskMember::where('task_id', $request->task_id)->pluck('member_id')->toArray();
-            $members = User::whereIn('id', $member_list)->get();
+            $members = MemberList::where('task_id', $request->task_id)->get();
             $sub_tasks['all'] = Task::where('parent_id', $request->task_id)->count();
             $sub_tasks['todo'] = Task::where('parent_id', $request->task_id)->where('status', 0)->count();
             $sub_tasks['progress'] = Task::where('parent_id', $request->task_id)->where('status', 1)->count();
@@ -454,7 +560,7 @@ class ApiController extends Controller
                     'is_main_person' => 0,
                 ]);
             }
-            $members = User::whereIn('id', $request->members)->get();
+            $members = MemberList::where('task_id', $request->task_id)->whereIn('id', $request->members)->whereNot('is_main_person', 1)->get();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Task member updated successfully',
@@ -542,6 +648,23 @@ class ApiController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed update task order:'. $e->getMessage(),
+            ]);
+        }
+    }
+
+    function taskDescriptionEdit(Request $request) {
+        try {
+            $task = Task::find($request->task_id)->update(
+                ['description' => $request->description]
+            );
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Task description updated successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed update task description:'. $e->getMessage(),
             ]);
         }
     }

@@ -57,21 +57,25 @@
     </div>
     <div class="flex items-center pl-2">
         <div id="{{ __('main-person-'.$task->task_id) }}" data-dropdown-toggle="{{ __('person-list-'.$task->task_id) }}" class="cursor-pointer flex items-center" data-type="{{ $task->main_person_id }}">
-            @if($task->main_person_icon)
-                <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+            @if($task->main_person_id)
+                @if($task->main_person_icon)
+                    <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+                @else
+                    <x-icons.person-circle class="w-8 h-8 text-lg">{{ $task->main_person_name }}</x-icons.person-circle>
+                @endif
+                {{ $task->main_person_name }}
             @else
                 <i class="bi bi-person-circle text-gray-400 text-3xl mr-2"></i>
             @endif
-            {{ $task->main_person_name }}
         </div>
         <div id="{{ __('person-list-'.$task->task_id) }}" class="hidden">
             <ul class="flex flex-col gap-2 bg-white pt-4 p-2 border rounded h-[200px] overflow-y-auto">
                 @foreach($users as $user)
                     <li class="hover:bg-gray-100 rounded cursor-pointer p-2 task-person flex items-center" data-id="{{ $task->task_id }}" data-type="{{ $user->id }}">
                         @if($user->icon)
-                            <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+                            <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" />
                         @else
-                            <i class="bi bi-person-circle text-gray-400 mr-2"></i>
+                            <x-icons.person-circle class="w-6 h-6 text-sm">{{ $user->name }}</x-icons.person-circle>
                         @endif
                         {{ $user->name }}
                     </li>
@@ -80,8 +84,8 @@
         </div>
     </div>
     <div class="justify-center items-center @if(!$task->start_date && !$task->end_date) hidden @else flex @endif">
-        <input type="date" value="{{ $task->start_date }}" class="border-none w-full rounded start_date" data-id="{{ $task->task_id }}">
+        <input type="date" value="{{ $task->start_date }}" class="border-none w-full rounded start_date text-xs" data-id="{{ $task->task_id }}">
         〜
-        <input type="date" value="{{ $task->end_date }}" class="border-none w-full rounded end_date" data-id="{{ $task->task_id }}">
+        <input type="date" value="{{ $task->end_date }}" class="border-none w-full rounded end_date text-xs" data-id="{{ $task->task_id }}">
     </div>
 </li>

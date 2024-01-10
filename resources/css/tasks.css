@@ -1,3 +1,49 @@
 @import "common.css";
+@import "@toast-ui/editor/dist/toastui-editor.css";
+@import "@toast-ui/editor/dist/toastui-editor-viewer.css";
+@import "@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css";
+@import "@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css";
+@import "@toast-ui/editor-plugin-table-merged-cell/dist/toastui-editor-plugin-table-merged-cell.css";
+.toastui-editor-tooltip .text {
+  color: white;
+}
+
+.toastui-editor-popup-color {
+  height: 250px;
+}
+
+ul.tui-colorpicker-clearfix {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+div.tui-colorpicker-clearfix {
+  height: 32px;
+}
+
+.tui-colorpicker-palette-preview {
+  display: inline-block;
+}
+
+.tui-colorpicker-palette-hex {
+  box-sizing: content-box;
+}
+
+.tui-colorpicker-slider-left {
+  float: left;
+}
+
+.tui-colorpicker-slider-right {
+  float: right;
+}
+
+.tui-colorpicker-svg-slider {
+  width: 120px;
+  height: 120px;
+}
+
+.tui-colorpicker-svg-huebar {
+  height: 120px;
+}
 
 /*# sourceMappingURL=tasks.css.map */

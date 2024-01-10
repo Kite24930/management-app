@@ -1,6 +1,6 @@
 <div id="modal" class="w-full md:h-full h-[calc(100%-100px)] max-w-3xl bg-gray-100 rounded-lg p-6 flex flex-col items-start gap-4 overflow-y-auto" data-id="">
-    <div class="flex items-center justify-between w-full">
-        <div class="text-sm">
+    <div class="flex items-center justify-between w-full gap-4">
+        <div class="text-sm flex-1">
             @foreach($parent_task as $index => $task)
                 <a href="{{ route('tasks', $task->task_id) }}">{{ $task->title }}</a>
                 @if($index < count($parent_task) - 1)
@@ -8,8 +8,25 @@
                 @endif
             @endforeach
         </div>
+        <div id="modal-menu" data-dropdown-toggle="modal-menu-list" class="h-10 w-10 flex justify-center items-center rounded border border-gray-600 hover:bg-gray-600 group cursor-pointer">
+            <i class="bi bi-three-dots text-lg group-hover:text-gray-100"></i>
+        </div>
+        <div id="modal-menu-list" class="hidden">
+            <ul class="flex flex-col gap-2 bg-white p-2 border rounded">
+                <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-menu">
+                    <a href="{{ route('tasks', $task->id) }}">
+                        <i class="bi bi-kanban mr-2"></i>
+                        タスクリストを開く
+                    </a>
+                </li>
+                <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-menu *:text-red-700 text-red-700" data-id="{{ $task->id }}">
+                    <i class="bi bi-trash mr-2"></i>
+                    削除
+                </li>
+            </ul>
+        </div>
         <button id="modalClose" class="h-10 w-10 flex justify-center items-center rounded border border-gray-600 hover:bg-gray-600 group" type="button">
-            <i class="bi bi-x text-lg group group-hover:text-gray-100"></i>
+            <i class="bi bi-x text-lg group-hover:text-gray-100"></i>
         </button>
     </div>
     <input id="modal-title" class="modal-title rounded-lg border-none text-lg font-bold w-full" type="text" value="{{ $task->title }}">
@@ -112,14 +129,16 @@
     <div class="flex items-center md:flex-row flex-col md:justify-evenly w-full text-sm">
         <div>
             開始日：
-            <input id="modal_start" type="date" class="border-none" @if($task->start_date) value="{{ $task->start_date }}" @endif>
+            <input id="modal-start-date" type="date" class="border-none" @if($task->start_date) value="{{ $task->start_date }}" @endif data-id="{{ $task->id }}">
+            <i id="modal-start-date-clear" class="bi bi-x-octagon-fill ml-2 text-lg cursor-pointer"></i>
         </div>
         <div class="mx-6 md:block hidden">
             〜
         </div>
         <div>
             終了予定日：
-            <input id="modal_end" type="date" class="border-none" @if($task->end_date) value="{{ $task->end_date }}" @endif>
+            <input id="modal-end-date" type="date" class="border-none" @if($task->end_date) value="{{ $task->end_date }}" @endif data-id="{{ $task->id }}">
+            <i id="modal-end-date-clear" class="bi bi-x-octagon-fill ml-2 text-lg cursor-pointer"></i>
         </div>
     </div>
     <div class="flex items-center md:flex-row flex-col w-full text-sm">
@@ -129,18 +148,18 @@
                 @if($task->main_person_icon)
                     <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
                 @else
-                    <i class="bi bi-person-circle text-2xl mr-2"></i>
+                    <x-icons.person-circle class="w-8 h-8 text-lg">{{ $task->main_person_name }}</x-icons.person-circle>
                 @endif
                 {{ $task->main_person_name }}
             </div>
             <div id="modal-main-person-list" class="hidden">
                 <ul class="flex flex-col gap-2 bg-white pt-4 p-2 border rounded h-[200px] overflow-y-auto">
                     @foreach($users as $user)
-                        <li class="hover:bg-gray-100 rounded cursor-pointer p-2 task-person flex items-center" data-id="{{ $task->task_id }}" data-type="{{ $user->id }}">
+                        <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-main-person flex items-center" data-id="{{ $task->task_id }}" data-person="{{ $user->id }}">
                             @if($user->icon)
-                                <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+                                <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" />
                             @else
-                                <i class="bi bi-person-circle"></i>
+                                <x-icons.person-circle class="w-6 h-6 text-sm">{{ $user->name }}</x-icons.person-circle>
                             @endif
                             {{ $user->name }}
                         </li>
@@ -152,16 +171,18 @@
     <div>
         <div class="flex items-center text-sm w-full">
             担当者：
-            <div id="modal-member" data-dropdown-toggle="modal-member-list" class="cursor-pointer flex flex-wrap gap-6">
+            <div id="modal-member" data-dropdown-toggle="modal-member-list" class="cursor-pointer flex flex-wrap">
                 @foreach($members as $member)
-                    <div class="flex items-center">
-                        @if($member->icon)
-                            <x-icons.icon src="{{ $member->id.'/'.$member->icon }}" alt="{{ $member->name }}" />
-                        @else
-                            <i class="bi bi-person-circle text-2xl mr-2"></i>
-                        @endif
-                        {{ $member->name }}
-                    </div>
+                    @if($member->is_main_person === 0)
+                        <div class="flex items-center">
+                            @if($member->icon)
+                                <x-icons.icon src="{{ $member->id.'/'.$member->icon }}" alt="{{ $member->name }}" />
+                            @else
+                                <x-icons.person-circle class="w-8 h-8 text-lg">{{ $member->name }}</x-icons.person-circle>
+                            @endif
+{{--                            {{ $member->name }}--}}
+                        </div>
+                    @endif
                 @endforeach
             </div>
             <div id="modal-member-list" class="hidden">
@@ -170,9 +191,9 @@
                         <li class="hover:bg-gray-100 rounded cursor-pointer p-2 task-person flex items-center" data-id="{{ $task->task_id }}" data-type="{{ $user->id }}">
                             <input id="{{ __('modal-member-'.$user->id) }}" type="checkbox" class="mr-2 rounded modal-member" value="{{ $user->id }}" @if(in_array($user->id, $member_list)) checked @endif>
                             @if($user->icon)
-                                <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+                                <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" />
                             @else
-                                <i class="bi bi-person-circle"></i>
+                                <x-icons.person-circle class="w-6 h-6 text-sm">{{ $user->name }}</x-icons.person-circle>
                             @endif
                             {{ $user->name }}
                         </li>
@@ -181,10 +202,18 @@
             </div>
         </div>
     </div>
-    <div id="modal-description">
+    <div id="modal-description" class="w-full">
         <textarea id="modal-editor-md" class="hidden">{{ $task->description }}</textarea>
-        <div id="modal-editor" class="hidden"></div>
-        <div id="modal-viewer"></div>
+        <div id="modal-editor" class="hidden mb-2"></div>
+        <div id="modal-viewer" class="bg-white p-4 rounded-lg mb-2"></div>
+        <button id="modal-editor-open" class="bg-white p-2 border flex items-center justify-center">
+            <i class="bi bi-pencil-square text-lg mr-2"></i>
+            edit description
+        </button>
+        <button id="modal-editor-register" class="bg-white p-2 border hidden items-center justify-center" data-id="{{ $task->id }}">
+            <i class="bi bi-node-plus-fill text-lg mr-2"></i>
+            register description
+        </button>
     </div>
     <div id="modal-progress">
         <input id="modal-sub-all" type="hidden" value="{{ $sub_tasks['all'] }}">

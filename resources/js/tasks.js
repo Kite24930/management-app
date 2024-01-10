@@ -2,6 +2,11 @@ import './common.js';
 import Sortable from 'sortablejs';
 import axios from "axios";
 import { initFlowbite } from "flowbite";
+import Editor from "@toast-ui/editor";
+import codeSyntaxHighlight from "@toast-ui/editor-plugin-code-syntax-highlight";
+import tableMergedCellPlugin from "@toast-ui/editor-plugin-table-merged-cell";
+import colorSyntax from "@toast-ui/editor-plugin-color-syntax";
+
 
 const todo = document.getElementById('todo');
 const progress = document.getElementById('progress');
@@ -149,6 +154,58 @@ function taskEdit(target) {
                     modalTypeChange(target, typeEl.getAttribute('data-type'));
                 });
             });
+            document.getElementById('modal-start-date').addEventListener('change', (e) => {
+                modalStartDateChange(target, e.target.value);
+            });
+            document.getElementById('modal-start-date-clear').addEventListener('click', () => {
+                modalStartDateClear(target);
+            });
+            document.getElementById('modal-end-date').addEventListener('change', (e) => {
+                modalEndDateChange(target, e.target.value);
+            });
+            document.getElementById('modal-end-date-clear').addEventListener('click', () => {
+                modalEndDateClear(target);
+            });
+            document.querySelectorAll('.modal-main-person').forEach((el) => {
+                el.addEventListener('click', (e) => {
+                    let personEl = e.target;
+                    while (personEl.tagName !== 'LI') {
+                        personEl = personEl.parentNode;
+                    }
+                    modalMainPersonChange(target, personEl.getAttribute('data-person'));
+                });
+            });
+            document.querySelectorAll('.modal-member').forEach((el) => {
+                el.addEventListener('change', (e) => {
+                    modalPersonChange(target);
+                });
+            });
+            const descriptionMd = document.getElementById('modal-editor-md');
+            const descriptionEditor = new Editor({
+                el: document.getElementById('modal-editor'),
+                initialEditType: 'wysiwyg',
+                height: '300px',
+                plugins: [codeSyntaxHighlight, tableMergedCellPlugin, colorSyntax],
+                usageStatistics: false,
+                initialValue: descriptionMd.value,
+                placeholder: 'タスクの詳細を入力してください。',
+            });
+            const descriptionViewer = new Editor.factory({
+                el: document.getElementById('modal-viewer'),
+                viewer: true,
+                initialValue: descriptionMd.value,
+            });
+            document.getElementById('modal-editor-open').addEventListener('click', () => {
+                document.getElementById('modal-editor').classList.toggle('hidden');
+                document.getElementById('modal-viewer').classList.toggle('hidden');
+                document.getElementById('modal-editor-open').classList.toggle('hidden');
+                document.getElementById('modal-editor-open').classList.toggle('flex');
+                document.getElementById('modal-editor-register').classList.toggle('hidden');
+                document.getElementById('modal-editor-register').classList.toggle('flex');
+            });
+            document.getElementById('modal-editor-register').addEventListener('click', () => {
+                modalDescriptionEdit(target, descriptionEditor.getMarkdown());
+            });
             initFlowbite();
         })
         .catch((error) => {
@@ -280,6 +337,27 @@ function modalStartDateChange(target, value) {
         });
 }
 
+function modalStartDateClear(target) {
+    const sendData = {
+        task_id: target,
+    };
+    axios.post('/api/taskStartDateClear', sendData)
+        .then((res) => {
+            console.log(res);
+            if (res.data.status === 'success') {
+                document.getElementById('modal-start-date').value = '';
+                indicatorSuccess();
+            } else {
+                window.alert('開始日の削除に失敗しました。');
+                indicatorError();
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            indicatorError();
+        });
+}
+
 function modalEndDateChange(target, value) {
     const sendData = {
         task_id: target,
@@ -301,6 +379,27 @@ function modalEndDateChange(target, value) {
         });
 }
 
+function modalEndDateClear(target) {
+    const sendData = {
+        task_id: target,
+    };
+    axios.post('/api/taskEndDateClear', sendData)
+        .then((res) => {
+            console.log(res);
+            if (res.data.status === 'success') {
+                document.getElementById('modal-end-date').value = '';
+                indicatorSuccess();
+            } else {
+                window.alert('終了日の削除に失敗しました。');
+                indicatorError();
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            indicatorError();
+        });
+}
+
 function modalMainPersonChange(target, value) {
     const sendData = {
         task_id: target,
@@ -310,9 +409,49 @@ function modalMainPersonChange(target, value) {
         .then((res) => {
             console.log(res);
             if (res.data.status === 'success') {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(res.data.view, 'text/html');
-                document.getElementById('modal-person').innerHTML = doc.body.innerHTML;
+                const mainPerson = document.getElementById('modal-main-person');
+                if (res.data.user.icon !== null) {
+                    const icon = document.createElement('img');
+                    icon.src = '/storage/' + res.data.user.icon;
+                    icon.classList.add('w-8', 'h-8', 'rounded-full', 'object-cover', 'inline-block', 'mr-2');
+                    icon.alt = res.data.user.name;
+                    mainPerson.innerHTML = '';
+                    mainPerson.append(icon);
+                } else {
+                    const iconWrapper = document.createElement('div');
+                    iconWrapper.classList.add('inline-block');
+                    const icon = document.createElement('div');
+                    icon.classList.add('w-8', 'h-8', 'rounded-full', 'text-lg', 'flex', 'items-center', 'justify-center', 'mr-2', 'bg-latte', 'text-white', 'font-semibold', 'border');
+                    icon.innerHTML = res.data.user.name.slice(0, 1);
+                    iconWrapper.append(icon);
+                    mainPerson.innerHTML = '';
+                    mainPerson.append(iconWrapper);
+                }
+                mainPerson.innerHTML += res.data.user.name;
+                const modalMember = document.getElementById('modal-member');
+                modalMember.innerHTML = '';
+                res.data.members.forEach((member) => {
+                    const memberEl = document.createElement('div');
+                    memberEl.classList.add('flex', 'items-center');
+                    if (member.icon !== null) {
+                        const icon = document.createElement('img');
+                        icon.src = '/storage/' + member.icon;
+                        icon.classList.add('w-8', 'h-8', 'rounded-full', 'object-cover', 'inline-block', 'mr-2');
+                        icon.alt = member.name;
+                        memberEl.append(icon);
+                    } else {
+                        const iconWrapper = document.createElement('div');
+                        iconWrapper.classList.add('inline-block');
+                        const icon = document.createElement('div');
+                        icon.classList.add('w-8', 'h-8', 'rounded-full', 'text-lg', 'flex', 'items-center', 'justify-center', 'mr-2', 'bg-latte', 'text-white', 'font-semibold', 'border');
+                        icon.innerHTML = member.name.slice(0, 1);
+                        iconWrapper.append(icon);
+                        memberEl.append(iconWrapper);
+                    }
+                    memberEl.innerHTML += member.name;
+                    modalMember.append(memberEl);
+                });
+                document.getElementById('modal-main-person-list').classList.toggle('hidden');
                 indicatorSuccess();
             } else {
                 window.alert('担当者の変更に失敗しました。');
@@ -325,7 +464,7 @@ function modalMainPersonChange(target, value) {
         });
 }
 
-function modalPersonChange(target, value) {
+function modalPersonChange(target) {
     let members = [];
     document.querySelectorAll('.modal-member').forEach((el) => {
         if (el.checked) {
@@ -350,17 +489,57 @@ function modalPersonChange(target, value) {
                         icon.src = '/storage/' + member.icon;
                         icon.classList.add('w-8', 'h-8', 'rounded-full', 'object-cover', 'inline-block', 'mr-2');
                         icon.alt = member.name;
+                        memberEl.append(icon);
                     } else {
-                        const icon = document.createElement('i');
-                        icon.classList.add('bi', 'bi-person-circle', 'text-gray-400', 'text-2xl', 'mr-2');
+                        const iconWrapper = document.createElement('div');
+                        iconWrapper.classList.add('inline-block');
+                        const icon = document.createElement('div');
+                        icon.classList.add('w-8', 'h-8', 'rounded-full', 'text-lg', 'flex', 'items-center', 'justify-center', 'mr-2', 'bg-latte', 'text-white', 'font-semibold', 'border');
+                        icon.innerHTML = member.name.slice(0, 1);
+                        iconWrapper.append(icon);
+                        memberEl.append(iconWrapper);
                     }
-                    memberEl.append(icon);
-                    memberEl.innerHTML += member.name;
+                    // memberEl.innerHTML += member.name;
                     targetEl.append(memberEl);
                 });
+                // initFlowbite();
                 indicatorSuccess();
             } else {
                 window.alert('担当者の変更に失敗しました。');
+                indicatorError();
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            indicatorError();
+        });
+}
+
+function modalDescriptionEdit(target, description) {
+    const sendData = {
+        task_id: target,
+        description: description,
+    };
+    axios.post('/api/taskDescriptionEdit', sendData)
+        .then((res) => {
+            console.log(res);
+            if (res.data.status === 'success') {
+                const modalViewer = document.getElementById('modal-viewer');
+                modalViewer.innerHTML = '';
+                const viewer = new Editor.factory({
+                    el: modalViewer,
+                    viewer: true,
+                    initialValue: description,
+                });
+                document.getElementById('modal-editor').classList.toggle('hidden');
+                document.getElementById('modal-viewer').classList.toggle('hidden');
+                document.getElementById('modal-editor-open').classList.toggle('hidden');
+                document.getElementById('modal-editor-open').classList.toggle('flex');
+                document.getElementById('modal-editor-register').classList.toggle('hidden');
+                document.getElementById('modal-editor-register').classList.toggle('flex');
+                indicatorSuccess();
+            } else {
+                window.alert('詳細の変更に失敗しました。');
                 indicatorError();
             }
         })
@@ -481,10 +660,14 @@ function personChange(target, el) {
                     mainPerson.innerHTML = '';
                     mainPerson.append(icon);
                 } else {
-                    const icon = document.createElement('i');
-                    icon.classList.add('bi', 'bi-person-circle', 'text-gray-400', 'text-3xl', 'mr-2');
+                    const iconWrapper = document.createElement('div');
+                    iconWrapper.classList.add('inline-block');
+                    const icon = document.createElement('div');
+                    icon.classList.add('w-8', 'h-8', 'rounded-full', 'text-lg', 'flex', 'items-center', 'justify-center', 'mr-2', 'bg-latte', 'text-white', 'font-semibold', 'border');
+                    icon.innerHTML = res.data.user.name.slice(0, 1);
+                    iconWrapper.append(icon);
                     mainPerson.innerHTML = '';
-                    mainPerson.append(icon);
+                    mainPerson.append(iconWrapper);
                 }
                 mainPerson.innerHTML += res.data.user.name;
                 document.getElementById('person-list-' + target).classList.toggle('hidden');
@@ -500,14 +683,48 @@ function personChange(target, el) {
         });
 }
 
-function startDateChange(target) {
+function startDateChange(target, el) {
     indicatorPost();
-
+    const sendData = {
+        task_id: target,
+        start_date: el.value,
+    };
+    axios.post('/api/taskStartDateEdit', sendData)
+        .then((res) => {
+            console.log(res);
+            if (res.data.status === 'success') {
+                indicatorSuccess();
+            } else {
+                window.alert('開始日の変更に失敗しました。');
+                indicatorError();
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            indicatorError();
+        });
 }
 
-function endDateChange(target) {
+function endDateChange(target, el) {
     indicatorPost();
-
+    const sendData = {
+        task_id: target,
+        end_date: el.value,
+    };
+    axios.post('/api/taskEndDateEdit', sendData)
+        .then((res) => {
+            console.log(res);
+            if (res.data.status === 'success') {
+                indicatorSuccess();
+            } else {
+                window.alert('終了日の変更に失敗しました。');
+                indicatorError();
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            indicatorError();
+        });
 }
 
 const statusList = ['todo', 'progress', 'pending', 'completed', 'other', 'cancel'];
