@@ -8,6 +8,7 @@ const progress = document.getElementById('progress');
 const pending = document.getElementById('pending');
 const completed = document.getElementById('completed');
 const other = document.getElementById('other');
+const cancel = document.getElementById('cancel');
 const indicator = document.getElementById('indicator');
 const indicatorIcon = document.getElementById('indicatorIcon');
 const indicatorText = document.getElementById('indicatorText');
@@ -46,6 +47,14 @@ window.addEventListener('load', () => {
     });
 
     new Sortable(other, {
+        group: 'tasks',
+        animation: 150,
+        onEnd: (event) => {
+            taskOrderPost();
+        },
+    });
+
+    new Sortable(cancel, {
         group: 'tasks',
         animation: 150,
         onEnd: (event) => {
@@ -703,7 +712,61 @@ function taskCreatePost(target) {
 }
 
 function taskOrderPost() {
-
+indicatorPost();
+    const todoList = [];
+    const progressList = [];
+    const pendingList = [];
+    const completedList = [];
+    const otherList = [];
+    const cancelList = [];
+    const allList = [];
+    todo.querySelectorAll('.task-item').forEach((el) => {
+        todoList.push(el.getAttribute('data-id'));
+        allList.push(el.getAttribute('data-id'));
+    });
+    progress.querySelectorAll('.task-item').forEach((el) => {
+        progressList.push(el.getAttribute('data-id'));
+        allList.push(el.getAttribute('data-id'));
+    });
+    pending.querySelectorAll('.task-item').forEach((el) => {
+        pendingList.push(el.getAttribute('data-id'));
+        allList.push(el.getAttribute('data-id'));
+    });
+    completed.querySelectorAll('.task-item').forEach((el) => {
+        completedList.push(el.getAttribute('data-id'));
+        allList.push(el.getAttribute('data-id'));
+    });
+    other.querySelectorAll('.task-item').forEach((el) => {
+        otherList.push(el.getAttribute('data-id'));
+        allList.push(el.getAttribute('data-id'));
+    });
+    cancel.querySelectorAll('.task-item').forEach((el) => {
+        cancelList.push(el.getAttribute('data-id'));
+        allList.push(el.getAttribute('data-id'));
+    });
+    const sendData = {
+        todo: todoList,
+        progress: progressList,
+        pending: pendingList,
+        completed: completedList,
+        other: otherList,
+        cancel: cancelList,
+        all: allList,
+    }
+    axios.post('/api/taskOrderPost', sendData)
+        .then((res) => {
+            console.log(res);
+            if (res.data.status === 'success') {
+                indicatorSuccess();
+            } else {
+                window.alert('タスクの並び替えに失敗しました。');
+                indicatorError();
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            indicatorError();
+        });
 }
 
 function inputUpdate(el) {

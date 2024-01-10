@@ -36,12 +36,6 @@ class MainController extends Controller
         $tasks = $tasks->get();
         $members = [];
         $comments = [];
-        $todo = [];
-        $progress = [];
-        $pending = [];
-        $completed = [];
-        $other = [];
-        $cancel = [];
         $log = [];
         foreach ($task_list as $task_id) {
             $member = TaskMember::where('task_id', $task_id);
@@ -51,28 +45,14 @@ class MainController extends Controller
                 $members[$task_id] = [];
             }
             $comments[$task_id] = Comment::where('task_id', $task_id)->get();
-            switch (Task::find($task_id)->status) {
-                case 0:
-                    $todo[$task_id] = ToDoList::where('task_id', $task_id)->first();
-                    break;
-                case 1:
-                    $progress[$task_id] = ProgressList::where('task_id', $task_id)->first();
-                    break;
-                case 2:
-                    $pending[$task_id] = PendingList::where('task_id', $task_id)->first();
-                    break;
-                case 3:
-                    $completed[$task_id] = CompletedList::where('task_id', $task_id)->first();
-                    break;
-                case 4:
-                    $other[$task_id] = OtherList::where('task_id', $task_id)->first();
-                    break;
-                case 5:
-                    $cancel[$task_id] = CancelList::where('task_id', $task_id)->first();
-                    break;
-            }
             $log[$task_id] = TaskLog::where('task_id', $task_id)->get();
         }
+        $todo = ToDoList::whereIn('task_id', $task_list)->orderBy('id')->get();
+        $progress = ProgressList::whereIn('task_id', $task_list)->orderBy('id')->get();
+        $pending = PendingList::whereIn('task_id', $task_list)->orderBy('id')->get();
+        $completed = CompletedList::whereIn('task_id', $task_list)->orderBy('id')->get();
+        $other = OtherList::whereIn('task_id', $task_list)->orderBy('id')->get();
+        $cancel = CancelList::whereIn('task_id', $task_list)->orderBy('id')->get();
         $data = compact('target', 'task_list', 'tasks', 'members', 'comments', 'todo', 'progress', 'pending', 'completed', 'other', 'cancel', 'log');
         return view('tasks', $data);
     }

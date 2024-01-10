@@ -32,3 +32,4 @@ Route::post('/taskPriorityChange', [ApiController::class, 'taskPriorityChange'])
 Route::post('/taskMainMemberChange', [ApiController::class, 'taskMainMemberChange'])->name('taskMainMemberChange');
 Route::post('/taskEdit', [ApiController::class, 'taskEdit'])->name('taskEdit');
 Route::post('/taskMemberEdit', [ApiController::class, 'taskMemberEdit'])->name('taskMemberEdit');
+Route::post('/taskOrderPost', [ApiController::class, 'taskOrderPost'])->name('taskOrderPost');

@@ -467,4 +467,82 @@ class ApiController extends Controller
             ]);
         }
     }
+
+    function taskOrderPost(Request $request) {
+        try {
+            DB::beginTransaction();
+            ToDoTask::whereIn('task_id', $request->all)->delete();
+            ProgressTask::whereIn('task_id', $request->all)->delete();
+            PendingTask::whereIn('task_id', $request->all)->delete();
+            CompletedTask::whereIn('task_id', $request->all)->delete();
+            OtherTask::whereIn('task_id', $request->all)->delete();
+            CancelTask::whereIn('task_id', $request->all)->delete();
+            $tables = ['to_do_tasks', 'progress_tasks', 'pending_tasks', 'completed_tasks', 'other_tasks', 'cancel_tasks'];
+            foreach ($tables as $table) {
+                $maxId = DB::table($table)->max('id');
+                $maxId = is_numeric($maxId) ? $maxId + 1 : 1; // nullの場合は1を設定
+                DB::statement("ALTER TABLE $table AUTO_INCREMENT = $maxId");
+            }
+            DB::beginTransaction(); // ALTER TABLEによって、トランザクションが自動的にコミットされてしまうので、再度トランザクションを開始する
+            foreach ($request->todo as $task) {
+                ToDoTask::create([
+                    'task_id' => $task,
+                ]);
+                Task::find($task)->update([
+                    'status' => 0,
+                ]);
+            }
+            foreach ($request->progress as $task) {
+                ProgressTask::create([
+                    'task_id' => $task,
+                ]);
+                Task::find($task)->update([
+                    'status' => 1,
+                ]);
+            }
+            foreach ($request->pending as $task) {
+                PendingTask::create([
+                    'task_id' => $task,
+                ]);
+                Task::find($task)->update([
+                    'status' => 2,
+                ]);
+            }
+            foreach ($request->completed as $task) {
+                CompletedTask::create([
+                    'task_id' => $task,
+                ]);
+                Task::find($task)->update([
+                    'status' => 3,
+                ]);
+            }
+            foreach ($request->other as $task) {
+                OtherTask::create([
+                    'task_id' => $task,
+                ]);
+                Task::find($task)->update([
+                    'status' => 4,
+                ]);
+            }
+            foreach ($request->cancel as $task) {
+                CancelTask::create([
+                    'task_id' => $task,
+                ]);
+                Task::find($task)->update([
+                    'status' => 5,
+                ]);
+            }
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Task order updated successfully',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed update task order:'. $e->getMessage(),
+            ]);
+        }
+    }
 }
