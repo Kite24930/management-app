@@ -225,7 +225,9 @@
         window.Laravel.progress = @json($progress);
         window.Laravel.completed = @json($completed);
         window.Laravel.other = @json($other);
+        window.Laravel.cancel = @json($cancel);
         window.Laravel.log = @json($log);
+        window.Laravel.active_user = @json($active_user);
         console.log(window.Laravel);
     </script>
     @vite(['resources/js/tasks.js'])

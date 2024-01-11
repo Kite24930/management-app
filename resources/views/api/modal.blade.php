@@ -1,35 +1,38 @@
-<div id="modal" class="w-full md:h-full h-[calc(100%-100px)] max-w-3xl bg-gray-100 rounded-lg p-6 flex flex-col items-start gap-4 overflow-y-auto" data-id="">
-    <div class="flex items-center justify-between w-full gap-4">
-        <div class="text-sm flex-1">
-            @foreach($parent_task as $index => $task)
-                <a href="{{ route('tasks', $task->task_id) }}">{{ $task->title }}</a>
-                @if($index < count($parent_task) - 1)
-                    <i class="bi bi-chevron-right mx-4"></i>
-                @endif
-            @endforeach
+<div id="modal" class="w-full md:h-full h-[calc(100%-100px)] max-w-3xl bg-gray-100 rounded-lg px-6 pb-6 flex flex-col items-start gap-4 overflow-y-auto relative" data-id="{{ $task->id }}">
+    <div class="w-full bg-gray-100 flex flex-col items-start gap-4 sticky top-0 pt-6 z-50">
+        <div class="flex items-center justify-between w-full gap-4">
+            <div class="text-sm flex-1">
+                @foreach($parent_task as $index => $task)
+                    <a href="{{ route('tasks', $task->task_id) }}">{{ $task->title }}</a>
+                    @if($index < count($parent_task) - 1)
+                        <i class="bi bi-chevron-right mx-4"></i>
+                    @endif
+                @endforeach
+            </div>
+            <div id="modal-menu" data-dropdown-toggle="modal-menu-list" class="h-10 w-10 flex justify-center items-center rounded border border-gray-600 hover:bg-gray-600 group cursor-pointer">
+                <i class="bi bi-three-dots text-lg group-hover:text-gray-100"></i>
+            </div>
+            <div id="modal-menu-list" class="hidden">
+                <ul class="flex flex-col gap-2 bg-white p-2 border rounded">
+                    <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-menu">
+                        <a href="{{ route('tasks', $task->id) }}">
+                            <i class="bi bi-kanban mr-2"></i>
+                            タスクリストを開く
+                        </a>
+                    </li>
+                    <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-menu *:text-red-700 text-red-700" data-id="{{ $task->id }}">
+                        <i class="bi bi-trash mr-2"></i>
+                        削除
+                    </li>
+                </ul>
+            </div>
+            <button id="modalClose" class="h-10 w-10 flex justify-center items-center rounded border border-gray-600 hover:bg-gray-600 group" type="button">
+                <i class="bi bi-x text-lg group-hover:text-gray-100"></i>
+            </button>
         </div>
-        <div id="modal-menu" data-dropdown-toggle="modal-menu-list" class="h-10 w-10 flex justify-center items-center rounded border border-gray-600 hover:bg-gray-600 group cursor-pointer">
-            <i class="bi bi-three-dots text-lg group-hover:text-gray-100"></i>
-        </div>
-        <div id="modal-menu-list" class="hidden">
-            <ul class="flex flex-col gap-2 bg-white p-2 border rounded">
-                <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-menu">
-                    <a href="{{ route('tasks', $task->id) }}">
-                        <i class="bi bi-kanban mr-2"></i>
-                        タスクリストを開く
-                    </a>
-                </li>
-                <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-menu *:text-red-700 text-red-700" data-id="{{ $task->id }}">
-                    <i class="bi bi-trash mr-2"></i>
-                    削除
-                </li>
-            </ul>
-        </div>
-        <button id="modalClose" class="h-10 w-10 flex justify-center items-center rounded border border-gray-600 hover:bg-gray-600 group" type="button">
-            <i class="bi bi-x text-lg group-hover:text-gray-100"></i>
-        </button>
+        <input id="modal-title" class="modal-title rounded-lg border-none text-lg font-bold w-full" type="text" value="{{ $task->title }}">
+        <hr class="w-full">
     </div>
-    <input id="modal-title" class="modal-title rounded-lg border-none text-lg font-bold w-full" type="text" value="{{ $task->title }}">
     <div class="flex md:items-center items-start w-full md:flex-row flex-col md:gap-0 gap-6 md:justify-evenly">
         <div class="text-sm">
             優先度：
@@ -145,12 +148,16 @@
         <div class="flex items-center">
             主担当：
             <div id="modal-main-person" data-dropdown-toggle="modal-main-person-list" class="flex items-center cursor-pointer" data-main-person="{{ $task->main_person_id }}">
-                @if($task->main_person_icon)
-                    <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+                @if($task->main_person_id)
+                    @if($task->main_person_icon)
+                        <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+                    @else
+                        <x-icons.person-circle class="w-8 h-8 text-lg">{{ $task->main_person_name }}</x-icons.person-circle>
+                    @endif
+                    {{ $task->main_person_name }}
                 @else
-                    <x-icons.person-circle class="w-8 h-8 text-lg">{{ $task->main_person_name }}</x-icons.person-circle>
+                    <i class="bi bi-person-circle text-gray-400 text-3xl mr-2"></i>
                 @endif
-                {{ $task->main_person_name }}
             </div>
             <div id="modal-main-person-list" class="hidden">
                 <ul class="flex flex-col gap-2 bg-white pt-4 p-2 border rounded h-[200px] overflow-y-auto">
@@ -215,7 +222,7 @@
             register description
         </button>
     </div>
-    <div id="modal-progress">
+    <div id="modal-progress" class="w-full">
         <input id="modal-sub-all" type="hidden" value="{{ $sub_tasks['all'] }}">
         <input id="modal-sub-todo" type="hidden" value="{{ $sub_tasks['todo'] }}">
         <input id="modal-sub-progress" type="hidden" value="{{ $sub_tasks['progress'] }}">
@@ -223,27 +230,52 @@
         <input id="modal-sub-completed" type="hidden" value="{{ $sub_tasks['completed'] }}">
         <input id="modal-sub-other" type="hidden" value="{{ $sub_tasks['other'] }}">
         <input id="modal-sub-cancel" type="hidden" value="{{ $sub_tasks['cancel'] }}">
+        <div class="w-full flex p-0 m-0 border border-gray-300 rounded-full overflow-hidden">
+            <button id="modal-todo-bar" data-tooltip-target="modal-todo-tooltip" type="button" class="bg-yellow-50 h-4 border-r flex justify-center items-center text-xs" style="width:33.3%">ToDo</button>
+            <div id="modal-todo-tooltip" role="tooltip" class="absolute z-50 invisible inline-block px-3 py-2 text-sm text-white transition-opacity duration-300 bg-gray-700 shadow-sm opacity-0 tooltip rounded-lg">
+                <span id="modal-todo-ratio" class="text-gray-300">3/10(33.3%)</span>
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            <button id="modal-progress-bar" data-tooltip-target="modal-progress-tooltip" type="button" class="bg-red-50 h-4 border-r flex justify-center items-center text-xs" style="width:20%">Progress</button>
+            <div id="modal-progress-tooltip" role="tooltip" class="absolute z-50 invisible inline-block px-3 py-2 text-sm text-white transition-opacity duration-300 bg-gray-700 shadow-sm opacity-0 tooltip rounded-lg">
+                <span id="modal-progress-ratio" class="text-gray-300">2/10(20.0%)</span>
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            <button id="modal-pending-bar" data-tooltip-target="modal-pending-tooltip" type="button" class="bg-yellow-300 h-4 border-r flex justify-center items-center text-xs" style="width:33.3%">Pending</button>
+            <div id="modal-pending-tooltip" role="tooltip" class="absolute z-50 invisible inline-block px-3 py-2 text-sm text-white transition-opacity duration-300 bg-gray-700 shadow-sm opacity-0 tooltip rounded-lg">
+                <span id="modal-pending-ratio" class="text-gray-300">3/10(33.3%)</span>
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            <button id="modal-completed-bar" data-tooltip-target="modal-completed-tooltip" type="button" class="bg-green-50 rounded-l-full h-4 border-r flex justify-center items-center text-xs" style="width:10%">Completed</button>
+            <div id="modal-completed-tooltip" role="tooltip" class="absolute z-50 invisible inline-block px-3 py-2 text-sm text-white transition-opacity duration-300 bg-gray-700 shadow-sm opacity-0 tooltip rounded-lg">
+                <span id="modal-completed-ratio" class="text-gray-300">1/10(10%)</span>
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            <button id="modal-other-bar" data-tooltip-target="modal-other-tooltip" type="button" class="bg-gray-50 h-4 border-r flex justify-center items-center text-xs" style="width:10%">Other</button>
+            <div id="modal-other-tooltip" role="tooltip" class="absolute z-50 invisible inline-block px-3 py-2 text-sm text-white transition-opacity duration-300 bg-gray-700 shadow-sm opacity-0 tooltip rounded-lg">
+                <span id="modal-other-ratio" class="text-gray-300">1/10(10%)</span>
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            <button id="modal-cancel-bar" data-tooltip-target="modal-cancel-tooltip" type="button" class="bg-blue-50 rounded-r-full h-4 flex justify-center items-center text-xs" style="width:10%">Cancel</button>
+            <div id="modal-cancel-tooltip" role="tooltip" class="absolute z-50 invisible inline-block px-3 py-2 text-sm text-white transition-opacity duration-300 bg-gray-700 shadow-sm opacity-0 tooltip rounded-lg">
+                <span id="modal-cancel-ratio" class="text-gray-300">1/10(10%)</span>
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+        </div>
     </div>
-    <ul id="modal-subtask" class="text-sm bg-gray-50 border rounded-lg w-full">
+    <ul id="modal-subtask" class="text-sm bg-gray-50 border rounded-lg w-full" data-id="{{ $task->id }}">
         @foreach($sub_tasks['tasks'] as $task)
             <x-self.modal-subtask :task="$task" :users="$users" />
         @endforeach
         <x-self.modal-subtask-add :users="$users" />
     </ul>
-    <div id="modal-comments">
+    <hr class="w-full">
+    <div class="bg-white p-2 rounded-lg w-full flex flex-col">
+        <x-self.modal-comment-add :user="$active_user" />
+    </div>
+    <div id="modal-comment" class="bg-white p-2 rounded-lg w-full flex flex-col gap-2">
         @foreach($comments as $comment)
-            <div class="flex justify-start">
-                <div id="{{ __('modal-comment-icon-'.$comment->id) }}" data-id="{{ $comment->id }}">
-                    @if($comment->icon)
-                        <x-icons.icon src="{{ $comment->user_id.'/'.$comment->icon }}" alt="{{ $comment->name }}" />
-                    @else
-                        <i class="bi bi-person-circle text-2xl mr-2"></i>
-                    @endif
-                </div>
-                <textarea id="{{ __('modal-comment-'.$comment->id) }}" class="hidden">{{ $comment->comment }}</textarea>
-                <div id="modal-editor" class="hidden editor" data-id="{{ $comment->id }}"></div>
-                <div id="modal-viewer" class="viewer" data-id="{{ $comment->id }}"></div>
-            </div>
+            <x-self.modal-comment :comment="$comment" :user="$active_user" />
         @endforeach
     </div>
 </div>

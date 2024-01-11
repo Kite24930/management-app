@@ -155,37 +155,44 @@ class ApiController extends Controller
                     $todo = ToDoTask::create([
                         'task_id' => $task_id,
                     ]);
+                    $view_name = 'components.icons.todo';
                     break;
                 case 1:
                     $progress = ProgressTask::create([
                         'task_id' => $task_id,
                     ]);
+                    $view_name = 'components.icons.progress';
                     break;
                 case 2:
                     $pending = PendingTask::create([
                         'task_id' => $task_id,
                     ]);
+                    $view_name = 'components.icons.pending';
                     break;
                 case 3:
                     $completed = CompletedTask::create([
                         'task_id' => $task_id,
                     ]);
+                    $view_name = 'components.icons.completed';
                     break;
                 case 4:
                     $other = OtherTask::create([
                         'task_id' => $task_id,
                     ]);
+                    $view_name = 'components.icons.other';
                     break;
                 case 5:
                     $cancel = CancelTask::create([
                         'task_id' => $task_id,
                     ]);
+                    $view_name = 'components.icons.cancel';
                     break;
             }
             DB::commit();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Task status updated successfully',
+                'view' => view($view_name)->render(),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -480,6 +487,41 @@ class ApiController extends Controller
         }
     }
 
+    function taskStatusChange(Request $request) {
+        try {
+            switch ($request->status) {
+                case 0:
+                    $view = 'components.icons.todo';
+                    break;
+                case 1:
+                    $view = 'components.icons.progress';
+                    break;
+                case 2:
+                    $view = 'components.icons.pending';
+                    break;
+                case 3:
+                    $view = 'components.icons.completed';
+                    break;
+                case 4:
+                    $view = 'components.icons.other';
+                    break;
+                case 5:
+                    $view = 'components.icons.cancel';
+                    break;
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Task status updated successfully',
+                'view' => view($view)->render(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update task status:'. $e->getMessage(),
+            ]);
+        }
+    }
+
     function taskEdit(Request $request) {
         try {
             $users = User::all();
@@ -501,11 +543,13 @@ class ApiController extends Controller
             $sub_tasks['other'] = Task::where('parent_id', $request->task_id)->where('status', 4)->count();
             $sub_tasks['cancel'] = Task::where('parent_id', $request->task_id)->where('status', 5)->count();
             $sub_tasks['tasks'] = TaskList::where('parent_id', $request->task_id)->get();
-            $comments = CommentList::where('task_id', $request->task_id)->get();
+            $comments = CommentList::where('task_id', $request->task_id)->orderBy('created_at')->get();
+            $active_user = User::find($request->login_user);
             return response()->json([
                 'status' => 'success',
                 'message' => 'Task updated successfully',
-                'view' => view('api.modal', compact('task', 'parent_task', 'member_list', 'members', 'sub_tasks', 'comments'))->render(),
+                'view' => view('api.modal', compact('task', 'parent_task', 'member_list', 'members', 'sub_tasks', 'comments', 'active_user'))->render(),
+                'request' => $request->all(),
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -517,30 +561,62 @@ class ApiController extends Controller
 
     function subTaskAdd(Request $request) {
         try {
-            $users = User::all();
-            $departments = Department::all();
-            $task_types = TaskType::all();
-            $task = TaskList::find($request->task_id);
-            $targetTask = $task;
-            $parent_task = [];
-            while ($targetTask->parent_id !== 0) {
-                $parent_task[] = TaskList::find($targetTask->parent_id);
+            $parentTask = Task::find($request->parent_id);
+            $addTask = Task::create([
+                'title' => $request->title,
+                'parent_id' => $request->parent_id,
+                'type' => $parentTask->type,
+                'priority' => $request->priority,
+                'created_by' => $request->login_user,
+                'status' => $request->status,
+            ]);
+            TaskMember::create([
+                'task_id' => $addTask->id,
+                'member_id' => $request->main_person_id,
+                'is_main_person' => 1,
+            ]);
+            switch ($request->status) {
+                case 0:
+                    $todo = ToDoTask::create([
+                        'task_id' => $addTask->id,
+                    ]);
+                    break;
+                case 1:
+                    $progress = ProgressTask::create([
+                        'task_id' => $addTask->id,
+                    ]);
+                    break;
+                case 2:
+                    $pending = PendingTask::create([
+                        'task_id' => $addTask->id,
+                    ]);
+                    break;
+                case 3:
+                    $completed = CompletedTask::create([
+                        'task_id' => $addTask->id,
+                    ]);
+                    break;
+                case 4:
+                    $other = OtherTask::create([
+                        'task_id' => $addTask->id,
+                    ]);
+                    break;
+                case 5:
+                    $cancel = CancelTask::create([
+                        'task_id' => $addTask->id,
+                    ]);
+                    break;
             }
-            $member_list = TaskMember::where('task_id', $request->task_id)->pluck('member_id')->toArray();
-            $members = User::whereIn('id', $member_list)->get();
-            $sub_tasks['all'] = Task::where('parent_id', $request->task_id)->count();
-            $sub_tasks['todo'] = Task::where('parent_id', $request->task_id)->where('status', 0)->count();
-            $sub_tasks['progress'] = Task::where('parent_id', $request->task_id)->where('status', 1)->count();
-            $sub_tasks['pending'] = Task::where('parent_id', $request->task_id)->where('status', 2)->count();
-            $sub_tasks['completed'] = Task::where('parent_id', $request->task_id)->where('status', 3)->count();
-            $sub_tasks['other'] = Task::where('parent_id', $request->task_id)->where('status', 4)->count();
-            $sub_tasks['cancel'] = Task::where('parent_id', $request->task_id)->where('status', 5)->count();
-            $sub_tasks['tasks'] = TaskList::where('parent_id', $request->task_id)->get();
-            $comments = CommentList::where('task_id', $request->task_id)->get();
+            $users = User::all();
+            $subTasks = TaskList::where('parent_id', $request->parent_id)->get();
+            foreach ($subTasks as $task) {
+                $view[] = view('components.self.modal-subtask', compact('task', 'users'))->render();
+            }
+            $view[] = view('components.self.modal-subtask-add', compact('users'))->render();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Sub task added successfully',
-                'view' => view('api.modal', compact('task', 'parent_task', 'member_list', 'members', 'sub_tasks', 'comments'))->render(),
+                'views' => $view,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -665,6 +741,86 @@ class ApiController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed update task description:'. $e->getMessage(),
+            ]);
+        }
+    }
+
+    function subTaskCount(Request $request) {
+        try {
+            $task_id = $request->task_id;
+            $sub_tasks['all'] = Task::where('parent_id', $task_id)->count();
+            $sub_tasks['todo'] = Task::where('parent_id', $task_id)->where('status', 0)->count();
+            $sub_tasks['progress'] = Task::where('parent_id', $task_id)->where('status', 1)->count();
+            $sub_tasks['pending'] = Task::where('parent_id', $task_id)->where('status', 2)->count();
+            $sub_tasks['completed'] = Task::where('parent_id', $task_id)->where('status', 3)->count();
+            $sub_tasks['other'] = Task::where('parent_id', $task_id)->where('status', 4)->count();
+            $sub_tasks['cancel'] = Task::where('parent_id', $task_id)->where('status', 5)->count();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sub task count updated successfully',
+                'sub_tasks' => $sub_tasks,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed update sub task count:'. $e->getMessage(),
+            ]);
+        }
+    }
+
+    function modalCommentAdd(Request $request) {
+        try {
+            $comment = Comment::create([
+                'task_id' => $request->task_id,
+                'user_id' => $request->login_user,
+                'comment' => $request->comment,
+            ]);
+            $comments = CommentList::where('task_id', $request->task_id)->get();
+            $user = User::find($request->login_user);
+            foreach ($comments as $comment) {
+                $view[] = view('components.self.modal-comment', compact('comment', 'user'))->render();
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Comment added successfully',
+                'views' => $view,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed add comment:'. $e->getMessage(),
+            ]);
+        }
+    }
+
+    function modalCommentEdit(Request $request) {
+        try {
+            $comment = Comment::find($request->comment_id)->update([
+                'comment' => $request->comment,
+            ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Comment edited successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed edit comment:'. $e->getMessage(),
+            ]);
+        }
+    }
+
+    function modalCommentDelete(Request $request) {
+        try {
+            $comment = Comment::find($request->comment_id)->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Comment deleted successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed delete comment:'. $e->getMessage(),
             ]);
         }
     }

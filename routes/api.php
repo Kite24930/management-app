@@ -33,7 +33,13 @@ Route::post('/taskEndDateClear', [ApiController::class, 'taskEndDateClear'])->na
 Route::post('/taskTypeChange', [ApiController::class, 'taskTypeChange'])->name('taskTypeChange');
 Route::post('/taskPriorityChange', [ApiController::class, 'taskPriorityChange'])->name('taskPriorityChange');
 Route::post('/taskMainMemberChange', [ApiController::class, 'taskMainMemberChange'])->name('taskMainMemberChange');
+Route::post('/taskStatusChange', [ApiController::class, 'taskStatusChange'])->name('taskStatusChange');
 Route::post('/taskEdit', [ApiController::class, 'taskEdit'])->name('taskEdit');
 Route::post('/taskMemberEdit', [ApiController::class, 'taskMemberEdit'])->name('taskMemberEdit');
 Route::post('/taskOrderPost', [ApiController::class, 'taskOrderPost'])->name('taskOrderPost');
 Route::post('/taskDescriptionEdit', [ApiController::class, 'taskDescriptionEdit'])->name('taskDescriptionEdit');
+Route::post('/subTaskAdd', [ApiController::class, 'subTaskAdd'])->name('subTaskAdd');
+Route::post('/subTaskCount', [ApiController::class, 'subTaskCount'])->name('subTaskCount');
+Route::post('/modalCommentAdd', [ApiController::class, 'modalCommentAdd'])->name('modalCommentAdd');
+Route::post('/modalCommentEdit', [ApiController::class, 'modalCommentEdit'])->name('modalCommentEdit');
+Route::post('/modalCommentDelete', [ApiController::class, 'modalCommentDelete'])->name('modalCommentDelete');

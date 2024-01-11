@@ -19,6 +19,7 @@ use App\Models\ToDoList;
 use App\Models\ToDoTask;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MainController extends Controller
 {
@@ -30,6 +31,7 @@ class MainController extends Controller
     }
 
     public function tasks($id = 0) {
+        $active_user = Auth::user();
         $target = TaskList::find($id);
         $tasks = TaskList::where('parent_id', $id);
         $task_list = $tasks->pluck('id')->toArray();
@@ -53,7 +55,7 @@ class MainController extends Controller
         $completed = CompletedList::whereIn('task_id', $task_list)->orderBy('id')->get();
         $other = OtherList::whereIn('task_id', $task_list)->orderBy('id')->get();
         $cancel = CancelList::whereIn('task_id', $task_list)->orderBy('id')->get();
-        $data = compact('target', 'task_list', 'tasks', 'members', 'comments', 'todo', 'progress', 'pending', 'completed', 'other', 'cancel', 'log');
+        $data = compact('target', 'task_list', 'tasks', 'members', 'comments', 'todo', 'progress', 'pending', 'completed', 'other', 'cancel', 'log', 'active_user');
         return view('tasks', $data);
     }
 }

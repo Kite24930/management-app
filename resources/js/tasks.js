@@ -7,7 +7,6 @@ import codeSyntaxHighlight from "@toast-ui/editor-plugin-code-syntax-highlight";
 import tableMergedCellPlugin from "@toast-ui/editor-plugin-table-merged-cell";
 import colorSyntax from "@toast-ui/editor-plugin-color-syntax";
 
-
 const todo = document.getElementById('todo');
 const progress = document.getElementById('progress');
 const pending = document.getElementById('pending');
@@ -111,6 +110,7 @@ function initFunctions(target) {
 function taskEdit(target) {
     const sendData = {
         task_id: target,
+        login_user: document.getElementById('loginUser').value,
     };
     axios.post('/api/taskEdit', sendData)
         .then((res) => {
@@ -180,32 +180,10 @@ function taskEdit(target) {
                     modalPersonChange(target);
                 });
             });
-            const descriptionMd = document.getElementById('modal-editor-md');
-            const descriptionEditor = new Editor({
-                el: document.getElementById('modal-editor'),
-                initialEditType: 'wysiwyg',
-                height: '300px',
-                plugins: [codeSyntaxHighlight, tableMergedCellPlugin, colorSyntax],
-                usageStatistics: false,
-                initialValue: descriptionMd.value,
-                placeholder: 'タスクの詳細を入力してください。',
-            });
-            const descriptionViewer = new Editor.factory({
-                el: document.getElementById('modal-viewer'),
-                viewer: true,
-                initialValue: descriptionMd.value,
-            });
-            document.getElementById('modal-editor-open').addEventListener('click', () => {
-                document.getElementById('modal-editor').classList.toggle('hidden');
-                document.getElementById('modal-viewer').classList.toggle('hidden');
-                document.getElementById('modal-editor-open').classList.toggle('hidden');
-                document.getElementById('modal-editor-open').classList.toggle('flex');
-                document.getElementById('modal-editor-register').classList.toggle('hidden');
-                document.getElementById('modal-editor-register').classList.toggle('flex');
-            });
-            document.getElementById('modal-editor-register').addEventListener('click', () => {
-                modalDescriptionEdit(target, descriptionEditor.getMarkdown());
-            });
+            modalDescriptionSet();
+            modalProgressBarSet();
+            modalSubTaskFunctionSet();
+            modalCommentFunctionSet();
             initFlowbite();
         })
         .catch((error) => {
@@ -239,7 +217,6 @@ function modalPriorityChange(target, value) {
         task_id: target,
         priority: value,
     };
-    console.log(sendData);
     axios.post('/api/taskPriorityEdit', sendData)
         .then((res) => {
             console.log(res);
@@ -499,10 +476,8 @@ function modalPersonChange(target) {
                         iconWrapper.append(icon);
                         memberEl.append(iconWrapper);
                     }
-                    // memberEl.innerHTML += member.name;
                     targetEl.append(memberEl);
                 });
-                // initFlowbite();
                 indicatorSuccess();
             } else {
                 window.alert('担当者の変更に失敗しました。');
@@ -513,6 +488,35 @@ function modalPersonChange(target) {
             console.log(error);
             indicatorError();
         });
+}
+
+function modalDescriptionSet() {
+    const descriptionMd = document.getElementById('modal-editor-md');
+    const descriptionEditor = new Editor({
+        el: document.getElementById('modal-editor'),
+        initialEditType: 'wysiwyg',
+        height: '300px',
+        plugins: [codeSyntaxHighlight, tableMergedCellPlugin, colorSyntax],
+        usageStatistics: false,
+        initialValue: descriptionMd.value,
+        placeholder: 'タスクの詳細を入力してください。',
+    });
+    const descriptionViewer = new Editor.factory({
+        el: document.getElementById('modal-viewer'),
+        viewer: true,
+        initialValue: descriptionMd.value,
+    });
+    document.getElementById('modal-editor-open').addEventListener('click', () => {
+        document.getElementById('modal-editor').classList.toggle('hidden');
+        document.getElementById('modal-viewer').classList.toggle('hidden');
+        document.getElementById('modal-editor-open').classList.toggle('hidden');
+        document.getElementById('modal-editor-open').classList.toggle('flex');
+        document.getElementById('modal-editor-register').classList.toggle('hidden');
+        document.getElementById('modal-editor-register').classList.toggle('flex');
+    });
+    document.getElementById('modal-editor-register').addEventListener('click', () => {
+        modalDescriptionEdit(target, descriptionEditor.getMarkdown());
+    });
 }
 
 function modalDescriptionEdit(target, description) {
@@ -547,6 +551,575 @@ function modalDescriptionEdit(target, description) {
             console.log(error);
             indicatorError();
         });
+}
+
+function modalProgressBarSet() {
+    const allVal = document.getElementById('modal-sub-all').value;
+    const todoVal = document.getElementById('modal-sub-todo').value;
+    const progressVal = document.getElementById('modal-sub-progress').value;
+    const pendingVal = document.getElementById('modal-sub-pending').value;
+    const completedVal = document.getElementById('modal-sub-completed').value;
+    const otherVal = document.getElementById('modal-sub-other').value;
+    const cancelVal = document.getElementById('modal-sub-cancel').value;
+    const ctx = document.getElementById('modal-progress-bar');
+    const todoBar = document.getElementById('modal-todo-bar');
+    const progressBar = document.getElementById('modal-progress-bar');
+    const pendingBar = document.getElementById('modal-pending-bar');
+    const completedBar = document.getElementById('modal-completed-bar');
+    const otherBar = document.getElementById('modal-other-bar');
+    const cancelBar = document.getElementById('modal-cancel-bar');
+    const todoRatio = document.getElementById('modal-todo-ratio');
+    const progressRatio = document.getElementById('modal-progress-ratio');
+    const pendingRatio = document.getElementById('modal-pending-ratio');
+    const completedRatio = document.getElementById('modal-completed-ratio');
+    const otherRatio = document.getElementById('modal-other-ratio');
+    const cancelRatio = document.getElementById('modal-cancel-ratio');
+    if (allVal === '0') {
+        todoBar.style.width = '100%';
+        todoRatio.innerHTML = 'サブタスクなし';
+        progressBar.classList.add('hidden');
+        pendingBar.classList.add('hidden');
+        completedBar.classList.add('hidden');
+        otherBar.classList.add('hidden');
+        cancelBar.classList.add('hidden');
+    } else {
+        if (todoVal === '0') {
+            todoBar.style.width = '0%';
+            todoRatio.innerHTML = '0/0 (0%)';
+            todoBar.classList.add('hidden');
+        } else {
+            const todoRatioVal = (todoVal / allVal * 100).toFixed(1);
+            todoBar.style.width = todoRatioVal + '%';
+            todoRatio.innerHTML = todoVal + '/' + allVal + ' (' + todoRatioVal + '%)';
+            todoBar.classList.remove('hidden');
+        }
+        if (progressVal === '0') {
+            progressBar.style.width = '0%';
+            progressRatio.innerHTML = '0/0 (0%)';
+            progressBar.classList.add('hidden');
+        } else {
+            const progressRatioVal = (progressVal / allVal * 100).toFixed(1);
+            progressBar.style.width = progressRatioVal + '%';
+            progressRatio.innerHTML = progressVal + '/' + allVal + ' (' + progressRatioVal + '%)';
+            progressBar.classList.remove('hidden');
+        }
+        if (pendingVal === '0') {
+            pendingBar.style.width = '0%';
+            pendingRatio.innerHTML = '0/0 (0%)';
+            pendingBar.classList.add('hidden');
+        } else {
+            const pendingRatioVal = (pendingVal / allVal * 100).toFixed(1);
+            pendingBar.style.width = pendingRatioVal + '%';
+            pendingRatio.innerHTML = pendingVal + '/' + allVal + ' (' + pendingRatioVal + '%)';
+            pendingBar.classList.remove('hidden');
+        }
+        if (completedVal === '0') {
+            completedBar.style.width = '0%';
+            completedRatio.innerHTML = '0/0 (0%)';
+            completedBar.classList.add('hidden');
+        } else {
+            const completedRatioVal = (completedVal / allVal * 100).toFixed(1);
+            completedBar.style.width = completedRatioVal + '%';
+            completedRatio.innerHTML = completedVal + '/' + allVal + ' (' + completedRatioVal + '%)';
+            completedBar.classList.remove('hidden');
+        }
+        if (otherVal === '0') {
+            otherBar.style.width = '0%';
+            otherRatio.innerHTML = '0/0 (0%)';
+            otherBar.classList.add('hidden');
+        } else {
+            const otherRatioVal = (otherVal / allVal * 100).toFixed(1);
+            otherBar.style.width = otherRatioVal + '%';
+            otherRatio.innerHTML = otherVal + '/' + allVal + ' (' + otherRatioVal + '%)';
+            otherBar.classList.remove('hidden');
+        }
+        if (cancelVal === '0') {
+            cancelBar.style.width = '0%';
+            cancelRatio.innerHTML = '0/0 (0%)';
+            cancelBar.classList.add('hidden');
+        } else {
+            const cancelRatioVal = (cancelVal / allVal * 100).toFixed(1);
+            cancelBar.style.width = cancelRatioVal + '%';
+            cancelRatio.innerHTML = cancelVal + '/' + allVal + ' (' + cancelRatioVal + '%)';
+            cancelBar.classList.remove('hidden');
+        }
+    }
+}
+
+function modalSubTaskFunctionSet() {
+    modalSubTaskFunction();
+    modalSubTaskAddFunction();
+}
+
+function modalSubTaskFunction() {
+    document.querySelectorAll('.modal-sub-priority').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            let priorityEl = e.target;
+            while (priorityEl.tagName !== 'LI') {
+                priorityEl = priorityEl.parentNode;
+            }
+            const sendData = {
+                task_id: priorityEl.getAttribute('data-id'),
+                priority: priorityEl.getAttribute('data-priority'),
+            };
+            axios.post('/api/taskPriorityEdit', sendData)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(res.data.view, 'text/html');
+                        const targetEl = document.getElementById('modal-sub-priority-' + sendData.task_id);
+                        targetEl.innerHTML = doc.body.innerHTML;
+                        targetEl.setAttribute('data-priority', sendData.priority);
+                        document.getElementById('modal-sub-priority-list-' + sendData.task_id).classList.toggle('hidden');
+                        indicatorSuccess();
+                    } else {
+                        window.alert('優先度の変更に失敗しました。');
+                        indicatorError();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    indicatorError();
+                });
+        });
+    });
+    document.querySelectorAll('.modal-sub-title-edit').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            const target = e.target.getAttribute('data-id');
+            document.getElementById('modal-sub-link-' + target).classList.toggle('hidden');
+            document.getElementById('modal-sub-title-' + target).classList.toggle('hidden');
+            document.getElementById('modal-sub-title-' + target).focus();
+        });
+    });
+    document.querySelectorAll('.modal-sub-title').forEach((el) => {
+        el.addEventListener('change', (e) => {
+            const sendData = {
+                task_id: e.target.getAttribute('data-id'),
+                title: e.target.value,
+            };
+            axios.post('/api/taskTitleEdit', sendData)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        document.querySelector('#modal-sub-link-' + sendData.task_id + ' a').innerHTML = sendData.title;
+                        indicatorSuccess();
+                    } else {
+                        window.alert('タイトルの変更に失敗しました。');
+                        indicatorError();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    indicatorError();
+                });
+        });
+        el.addEventListener('focusout', (e) => {
+            const target = e.target.getAttribute('data-id');
+            document.getElementById('modal-sub-link-' + target).classList.toggle('hidden');
+            document.getElementById('modal-sub-title-' + target).classList.toggle('hidden');
+        });
+    });
+    document.querySelectorAll('.modal-sub-person').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            let personEl = e.target;
+            while (personEl.tagName !== 'LI') {
+                personEl = personEl.parentNode;
+            }
+            const sendData = {
+                task_id: personEl.getAttribute('data-id'),
+                member_id: personEl.getAttribute('data-person'),
+            };
+            axios.post('/api/taskMainMemberEdit', sendData)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        const mainPerson = document.getElementById('modal-sub-main-' + sendData.task_id);
+                        if (res.data.user.icon !== null) {
+                            const icon = document.createElement('img');
+                            icon.src = '/storage/' + res.data.user.icon;
+                            icon.classList.add('w-8', 'h-8', 'rounded-full', 'object-cover', 'inline-block', 'mr-2');
+                            icon.alt = res.data.user.name;
+                            mainPerson.innerHTML = '';
+                            mainPerson.append(icon);
+                        } else {
+                            const iconWrapper = document.createElement('div');
+                            iconWrapper.classList.add('inline-block');
+                            const icon = document.createElement('div');
+                            icon.classList.add('w-8', 'h-8', 'rounded-full', 'text-lg', 'flex', 'items-center', 'justify-center', 'mr-2', 'bg-latte', 'text-white', 'font-semibold', 'border');
+                            icon.innerHTML = res.data.user.name.slice(0, 1);
+                            iconWrapper.append(icon);
+                            mainPerson.innerHTML = '';
+                            mainPerson.append(iconWrapper);
+                        }
+                        document.getElementById('modal-sub-main-list-' + sendData.task_id).classList.toggle('hidden');
+                        indicatorSuccess();
+                    } else {
+                        window.alert('担当者の変更に失敗しました。');
+                        indicatorError();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    indicatorError();
+                });
+        });
+    });
+    document.querySelectorAll('.modal-sub-status').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            let statusEl = e.target;
+            while (statusEl.tagName !== 'LI') {
+                statusEl = statusEl.parentNode;
+            }
+            const sendData = {
+                task_id: statusEl.getAttribute('data-id'),
+                status: statusEl.getAttribute('data-status'),
+            };
+            axios.post('/api/taskStatusEdit', sendData)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(res.data.view, 'text/html');
+                        const targetEl = document.getElementById('modal-sub-status-' + sendData.task_id);
+                        targetEl.innerHTML = doc.body.innerHTML;
+                        targetEl.setAttribute('data-status', sendData.status);
+                        document.getElementById('modal-sub-status-list-' + sendData.task_id).classList.toggle('hidden');
+                        axios.post('/api/subTaskCount', {task_id: document.getElementById('modal').getAttribute('data-id')})
+                            .then((res) => {
+                                console.log(res);
+                                if (res.data.status === 'success') {
+                                    document.getElementById('modal-sub-all').value = res.data.sub_tasks.all;
+                                    document.getElementById('modal-sub-todo').value = res.data.sub_tasks.todo;
+                                    document.getElementById('modal-sub-progress').value = res.data.sub_tasks.progress;
+                                    document.getElementById('modal-sub-pending').value = res.data.sub_tasks.pending;
+                                    document.getElementById('modal-sub-completed').value = res.data.sub_tasks.completed;
+                                    document.getElementById('modal-sub-other').value = res.data.sub_tasks.other;
+                                    document.getElementById('modal-sub-cancel').value = res.data.sub_tasks.cancel;
+                                    modalProgressBarSet();
+                                    initFlowbite();
+                                    indicatorSuccess();
+                                } else {
+                                    window.alert('サブタスクの取得に失敗しました。');
+                                    indicatorError();
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                                indicatorError();
+                            });
+                    } else {
+                        window.alert('ステータスの変更に失敗しました。');
+                        indicatorError();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    indicatorError();
+                });
+        });
+    });
+}
+
+function modalSubTaskAddFunction() {
+    document.querySelectorAll('.modal-sub-add-priority').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            let priorityEl = e.target;
+            while (priorityEl.tagName !== 'LI') {
+                priorityEl = priorityEl.parentNode;
+            }
+            const sendData = {
+                priority: priorityEl.getAttribute('data-priority'),
+            };
+            axios.post('/api/taskPriorityChange', sendData)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(res.data.view, 'text/html');
+                        const targetEl = document.getElementById('modal-sub-priority-0');
+                        targetEl.innerHTML = doc.body.innerHTML;
+                        targetEl.setAttribute('data-priority', sendData.priority);
+                        document.getElementById('modal-sub-priority-list-0').classList.toggle('hidden');
+                        indicatorSuccess();
+                    } else {
+                        window.alert('優先度の変更に失敗しました。');
+                        indicatorError();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    indicatorError();
+                });
+        });
+    });
+    document.querySelectorAll('.modal-sub-add-person').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            let personEl = e.target;
+            while (personEl.tagName !== 'LI') {
+                personEl = personEl.parentNode;
+            }
+            const sendData = {
+                member_id: personEl.getAttribute('data-person'),
+            };
+            axios.post('/api/taskMainMemberChange', sendData)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        const mainPerson = document.getElementById('modal-sub-main-0');
+                        if (res.data.user.icon !== null) {
+                            const icon = document.createElement('img');
+                            icon.src = '/storage/' + res.data.user.icon;
+                            icon.classList.add('w-8', 'h-8', 'rounded-full', 'object-cover', 'inline-block', 'mr-2');
+                            icon.alt = res.data.user.name;
+                            mainPerson.innerHTML = '';
+                            mainPerson.append(icon);
+                        } else {
+                            const iconWrapper = document.createElement('div');
+                            iconWrapper.classList.add('inline-block');
+                            const icon = document.createElement('div');
+                            icon.classList.add('w-8', 'h-8', 'rounded-full', 'text-lg', 'flex', 'items-center', 'justify-center', 'mr-2', 'bg-latte', 'text-white', 'font-semibold', 'border');
+                            icon.innerHTML = res.data.user.name.slice(0, 1);
+                            iconWrapper.append(icon);
+                            mainPerson.innerHTML = '';
+                            mainPerson.append(iconWrapper);
+                        }
+                        mainPerson.setAttribute('data-person', sendData.member_id);
+                        document.getElementById('modal-sub-main-list-0').classList.toggle('hidden');
+                        indicatorSuccess();
+                    } else {
+                        window.alert('担当者の変更に失敗しました。');
+                        indicatorError();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    indicatorError();
+                });
+        });
+    });
+    document.querySelectorAll('.modal-sub-add-status').forEach((el) => {
+        el.addEventListener('click', (e) => {
+            let statusEl = e.target;
+            while (statusEl.tagName !== 'LI') {
+                statusEl = statusEl.parentNode;
+            }
+            const sendData = {
+                status: statusEl.getAttribute('data-status'),
+            };
+            axios.post('/api/taskStatusChange', sendData)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(res.data.view, 'text/html');
+                        const targetEl = document.getElementById('modal-sub-status-0');
+                        targetEl.innerHTML = doc.body.innerHTML;
+                        targetEl.setAttribute('data-status', sendData.status);
+                        document.getElementById('modal-sub-status-list-0').classList.toggle('hidden');
+                        indicatorSuccess();
+                    } else {
+                        window.alert('ステータスの変更に失敗しました。');
+                        indicatorError();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    indicatorError();
+                });
+        });
+    });
+    document.getElementById('modal-title-edit-0').addEventListener('click', () => {
+        indicatorPost();
+        const modalSubtask = document.getElementById('modal-subtask');
+        const priority = document.getElementById('modal-sub-priority-0').getAttribute('data-priority');
+        const title = document.getElementById('modal-sub-title-0').value;
+        const mainPerson = document.getElementById('modal-sub-main-0').getAttribute('data-person');
+        const status = document.getElementById('modal-sub-status-0').getAttribute('data-status');
+        const parentId = modalSubtask.getAttribute('data-id');
+        const loginUser = document.getElementById('loginUser').value;
+        const sendData = {
+            priority: priority,
+            title: title,
+            main_person_id: mainPerson,
+            status: status,
+            parent_id: parentId,
+            login_user: loginUser,
+        };
+        axios.post('/api/subTaskAdd', sendData)
+            .then((res) => {
+                console.log(res);
+                if (res.data.status === 'success') {
+                    modalSubtask.innerHTML = '';
+                    res.data.views.forEach((view) => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(view, 'text/html');
+                        const taskEl = document.createElement('li');
+                        taskEl.classList.add('w-full', 'flex', 'items-center', 'gap-6', 'px-2');
+                        taskEl.innerHTML += doc.body.firstChild.innerHTML;
+                        modalSubtask.append(taskEl);
+                    });
+                    modalSubTaskFunction();
+                    modalProgressBarSet();
+                    indicatorSuccess();
+                } else {
+                    window.alert('サブタスクの追加に失敗しました。');
+                    indicatorError();
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                indicatorError();
+            });
+    });
+}
+
+function modalCommentFunctionSet() {
+    modalCommentFunction();
+    modalCommentAddFunction();
+}
+
+function modalCommentFunction() {
+    document.querySelectorAll('.modal-comment-editor').forEach((el) => {
+        const commentId = el.getAttribute('data-id');
+        const commentMd = document.getElementById('modal-comment-md-' + commentId);
+        const commentEditor = new Editor({
+            el: el,
+            initialEditType: 'wysiwyg',
+            height: '200px',
+            plugins: [codeSyntaxHighlight, tableMergedCellPlugin, colorSyntax],
+            usageStatistics: false,
+            initialValue: commentMd.value,
+            placeholder: 'コメントを入力してください。',
+
+        });
+        const commentViewerEl = document.getElementById('modal-comment-viewer-' + commentId);
+        const commentViewer = new Editor.factory({
+            el: commentViewerEl,
+            viewer: true,
+            initialValue: commentMd.value,
+        });
+        document.getElementById('modal-comment-edit-' + commentId).addEventListener('click', (e) => {
+            document.getElementById('modal-comment-editor-' + commentId).classList.toggle('hidden');
+            document.getElementById('modal-comment-viewer-' + commentId).classList.toggle('hidden');
+            document.getElementById('modal-comment-register-wrapper-' + commentId).classList.toggle('hidden');
+            document.getElementById('modal-comment-register-wrapper-' + commentId).classList.toggle('flex');
+            e.target.classList.toggle('hidden');
+            document.getElementById('modal-comment-delete-' + commentId).classList.toggle('hidden');
+        });
+        document.getElementById('modal-comment-register-' + commentId).addEventListener('click', (e) => {
+            const comment = commentEditor.getMarkdown();
+            const commentId = e.target.getAttribute('data-id');
+            const sendData = {
+                comment: comment,
+                comment_id: commentId,
+            };
+            axios.post('/api/modalCommentEdit', sendData)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        commentViewer.setMarkdown(comment);
+                        document.getElementById('modal-comment-editor-' + commentId).classList.toggle('hidden');
+                        document.getElementById('modal-comment-viewer-' + commentId).classList.toggle('hidden');
+                        document.getElementById('modal-comment-register-wrapper-' + commentId).classList.toggle('hidden');
+                        document.getElementById('modal-comment-register-wrapper-' + commentId).classList.toggle('flex');
+                        document.getElementById('modal-comment-edit-' + commentId).classList.toggle('hidden');
+                        document.getElementById('modal-comment-delete-' + commentId).classList.toggle('hidden');
+                        indicatorSuccess();
+                    } else {
+                        window.alert('コメントの変更に失敗しました。');
+                        indicatorError();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    indicatorError();
+                });
+        });
+        document.getElementById('modal-comment-delete-' + commentId).addEventListener('click', (e) => {
+            const commentId = e.target.getAttribute('data-id');
+            const sendData = {
+                comment_id: commentId,
+            };
+            axios.post('/api/modalCommentDelete', sendData)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        const commentEl = document.getElementById('modal-comment-' + commentId);
+                        commentEl.remove();
+                        indicatorSuccess();
+                    } else {
+                        window.alert('コメントの削除に失敗しました。');
+                        indicatorError();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    indicatorError();
+                });
+        });
+        document.getElementById('modal-comment-cancel-' + commentId).addEventListener('click', (e) => {
+            document.getElementById('modal-comment-editor-' + commentId).classList.toggle('hidden');
+            document.getElementById('modal-comment-viewer-' + commentId).classList.toggle('hidden');
+            document.getElementById('modal-comment-register-wrapper-' + commentId).classList.toggle('hidden');
+            document.getElementById('modal-comment-register-wrapper-' + commentId).classList.toggle('flex');
+            document.getElementById('modal-comment-edit-' + commentId).classList.toggle('hidden');
+            document.getElementById('modal-comment-delete-' + commentId).classList.toggle('hidden');
+        });
+    });
+}
+
+function modalCommentAddFunction() {
+    const commentEditor = new Editor({
+        el: document.getElementById('modal-comment-editor-0'),
+        initialEditType: 'wysiwyg',
+        height: '200px',
+        plugins: [codeSyntaxHighlight, tableMergedCellPlugin, colorSyntax],
+        usageStatistics: false,
+        placeholder: 'コメントを入力してください。',
+    });
+    document.getElementById('modal-new-comment').addEventListener('click', (e) => {
+        document.getElementById('modal-comment-wrapper').classList.toggle('hidden');
+        e.target.classList.toggle('hidden');
+    });
+    document.getElementById('modal-comment-register-0').addEventListener('click', () => {
+        const comment = commentEditor.getMarkdown();
+        const taskId = document.getElementById('modal').getAttribute('data-id');
+        const loginUser = document.getElementById('loginUser').value;
+        const sendData = {
+            comment: comment,
+            task_id: taskId,
+            login_user: loginUser,
+        };
+        axios.post('/api/modalCommentAdd', sendData)
+            .then((res) => {
+                console.log(res);
+                if (res.data.status === 'success') {
+                    const modalComment = document.getElementById('modal-comment');
+                    modalComment.innerHTML = '';
+                    res.data.views.forEach((view) => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(view, 'text/html');
+                        const commentEl = document.createElement('div');
+                        commentEl.classList.add('w-full', 'flex', 'flex-col', 'p-2', 'rounded-lg');
+                        commentEl.innerHTML += doc.body.firstChild.innerHTML;
+                        modalComment.append(commentEl);
+                    });
+                    modalCommentFunction();
+                    commentEditor.setMarkdown('');
+                    document.getElementById('modal-comment-wrapper').classList.toggle('hidden');
+                    document.getElementById('modal-new-comment').classList.toggle('hidden');
+                    indicatorSuccess();
+                } else {
+                    window.alert('コメントの追加に失敗しました。');
+                    indicatorError();
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                indicatorError();
+            });
+    });
 }
 
 function titleEdit(target, el) {
