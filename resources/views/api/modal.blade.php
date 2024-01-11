@@ -2,9 +2,9 @@
     <div class="w-full bg-gray-100 flex flex-col items-start gap-4 sticky top-0 pt-6 z-50">
         <div class="flex items-center justify-between w-full gap-4">
             <div class="text-sm flex-1">
-                @foreach($parent_task as $index => $task)
-                    <a href="{{ route('tasks', $task->task_id) }}">{{ $task->title }}</a>
-                    @if($index < count($parent_task) - 1)
+                @foreach($parent_tasks as $index => $parent_task)
+                    <a href="{{ route('tasks', $parent_task->task_id) }}">{{ $parent_task->title }}</a>
+                    @if($index < count($parent_tasks) - 1)
                         <i class="bi bi-chevron-right mx-4"></i>
                     @endif
                 @endforeach

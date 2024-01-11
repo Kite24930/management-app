@@ -528,10 +528,11 @@ class ApiController extends Controller
             $departments = Department::all();
             $task_types = TaskType::all();
             $task = TaskList::find($request->task_id);
-            $targetTask = $task;
-            $parent_task = [];
+            $targetTask = TaskList::find($request->task_id);
+            $parent_tasks = [];
             while ($targetTask->parent_id !== 0) {
-                $parent_task[] = TaskList::find($targetTask->parent_id);
+                $parent_tasks[] = TaskList::find($targetTask->parent_id);
+                $targetTask = TaskList::find($targetTask->parent_id);
             }
             $member_list = TaskMember::where('task_id', $request->task_id)->pluck('member_id')->toArray();
             $members = MemberList::where('task_id', $request->task_id)->get();
@@ -548,8 +549,9 @@ class ApiController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Task updated successfully',
-                'view' => view('api.modal', compact('task', 'parent_task', 'member_list', 'members', 'sub_tasks', 'comments', 'active_user'))->render(),
+                'view' => view('api.modal', compact('task', 'parent_tasks', 'member_list', 'members', 'sub_tasks', 'comments', 'active_user'))->render(),
                 'request' => $request->all(),
+                'values' => compact('task', 'parent_tasks', 'member_list', 'members', 'sub_tasks', 'comments', 'active_user'),
             ]);
         } catch (\Exception $e) {
             return response()->json([
