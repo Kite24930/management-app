@@ -122,6 +122,7 @@ function taskEdit(target) {
             targetEl.classList.toggle('hidden');
             targetEl.classList.toggle('flex');
             document.getElementById('modalClose').addEventListener('click', () => {
+                document.getElementById('modal').classList.toggle('hidden');
                 window.location.reload();
             });
             document.getElementById('modal-title').addEventListener('change', (e) => {
