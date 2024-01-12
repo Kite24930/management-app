@@ -59,7 +59,7 @@
         <div id="{{ __('main-person-'.$task->task_id) }}" data-dropdown-toggle="{{ __('person-list-'.$task->task_id) }}" class="cursor-pointer flex items-center" data-type="{{ $task->main_person_id }}">
             @if($task->main_person_id)
                 @if($task->main_person_icon)
-                    <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+                    <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" class="w-8 h-8" />
                 @else
                     <x-icons.person-circle class="w-8 h-8 text-lg">{{ $task->main_person_name }}</x-icons.person-circle>
                 @endif
@@ -73,7 +73,7 @@
                 @foreach($users as $user)
                     <li class="hover:bg-gray-100 rounded cursor-pointer p-2 task-person flex items-center" data-id="{{ $task->task_id }}" data-type="{{ $user->id }}">
                         @if($user->icon)
-                            <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" />
+                            <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="w-6 h-6" />
                         @else
                             <x-icons.person-circle class="w-6 h-6 text-sm">{{ $user->name }}</x-icons.person-circle>
                         @endif

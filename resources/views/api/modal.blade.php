@@ -150,7 +150,7 @@
             <div id="modal-main-person" data-dropdown-toggle="modal-main-person-list" class="flex items-center cursor-pointer" data-main-person="{{ $task->main_person_id }}">
                 @if($task->main_person_id)
                     @if($task->main_person_icon)
-                        <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+                        <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" class="w-8 h-8" />
                     @else
                         <x-icons.person-circle class="w-8 h-8 text-lg">{{ $task->main_person_name }}</x-icons.person-circle>
                     @endif
@@ -164,7 +164,7 @@
                     @foreach($users as $user)
                         <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-main-person flex items-center" data-id="{{ $task->task_id }}" data-person="{{ $user->id }}">
                             @if($user->icon)
-                                <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" />
+                                <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="w-6 h-6" />
                             @else
                                 <x-icons.person-circle class="w-6 h-6 text-sm">{{ $user->name }}</x-icons.person-circle>
                             @endif
@@ -183,7 +183,7 @@
                     @if($member->is_main_person === 0)
                         <div class="flex items-center">
                             @if($member->icon)
-                                <x-icons.icon src="{{ $member->id.'/'.$member->icon }}" alt="{{ $member->name }}" />
+                                <x-icons.icon src="{{ $member->id.'/'.$member->icon }}" alt="{{ $member->name }}" class="w-8 h-8" />
                             @else
                                 <x-icons.person-circle class="w-8 h-8 text-lg">{{ $member->name }}</x-icons.person-circle>
                             @endif
@@ -198,7 +198,7 @@
                         <li class="hover:bg-gray-100 rounded cursor-pointer p-2 task-person flex items-center" data-id="{{ $task->task_id }}" data-type="{{ $user->id }}">
                             <input id="{{ __('modal-member-'.$user->id) }}" type="checkbox" class="mr-2 rounded modal-member" value="{{ $user->id }}" @if(in_array($user->id, $member_list)) checked @endif>
                             @if($user->icon)
-                                <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" />
+                                <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="w-6 h-6" />
                             @else
                                 <x-icons.person-circle class="w-6 h-6 text-sm">{{ $user->name }}</x-icons.person-circle>
                             @endif

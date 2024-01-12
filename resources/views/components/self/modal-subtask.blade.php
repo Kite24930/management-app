@@ -39,7 +39,7 @@
     <div id="{{ __('modal-sub-main-'.$task->id) }}" data-dropdown-toggle="{{ __('modal-sub-main-list-'.$task->id) }}" class="cursor-pointer" data-id="{{ $task->id }}">
         @if($task->main_person_id)
             @if($task->main_person_icon)
-                <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+                <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" class="w-6 h-6" />
             @else
                 <x-icons.person-circle class="w-6 h-6 !mr-0">{{ $task->main_person_name }}</x-icons.person-circle>
             @endif
@@ -52,7 +52,7 @@
             @foreach($users as $user)
                 <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-sub-person flex items-center" data-id="{{ $task->id }}" data-person="{{ $user->id }}">
                     @if($user->icon)
-                        <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" />
+                        <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="w-6 h-6" />
                     @else
                         <x-icons.person-circle class="w-6 h-6 text-sm">{{ $user->name }}</x-icons.person-circle>
                     @endif
