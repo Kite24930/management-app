@@ -3,14 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Company;
+use App\Models\Department;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    /**
+     * Display the user's first login form.
+     */
+    public function firstLogin() {
+        return view('profile.first-login', [
+            'user' => Auth::user(),
+        ]);
+    }
+
+    /**
+     * Update the user's first login information.
+     */
+    public function firstLoginUpdate(Request $request): RedirectResponse {
+        $validated = $request->validateWithBag('updatePassword', [
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+            'first_login' => now(),
+        ]);
+
+        return Redirect::route('profile.edit')->with('status', 'password-updated');
+    }
+
     /**
      * Display the user's profile form.
      */
@@ -18,6 +49,7 @@ class ProfileController extends Controller
     {
         return view('profile.edit', [
             'user' => $request->user(),
+            'departments' => Department::all(),
         ]);
     }
 
@@ -26,15 +58,24 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        try {
+            $request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+            $file = $request->file('icon');
+            $fileName = $file->getClientOriginalName();
+            Storage::disk('public')->putFileAs(Auth::id(), $file, $fileName);
+            $request->user()->icon = $fileName;
+
+            if ($request->user()->isDirty('email')) {
+                $request->user()->email_verified_at = null;
+            }
+
+            $request->user()->save();
+
+            return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        } catch (\Exception $e) {
+            return Redirect::route('profile.edit')->with('status', $e->getMessage());
         }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**

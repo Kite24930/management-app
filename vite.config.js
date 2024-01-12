@@ -23,6 +23,7 @@ export default defineConfig({
                 indexStyles: 'resources/css/index.css',
                 tasks: 'resources/js/tasks.js',
                 tasksStyles: 'resources/css/tasks.css',
+                profileEdit: 'resources/js/profile/edit.js'
             },
         },
     }

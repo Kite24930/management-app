@@ -29,6 +29,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if (Auth::user()->first_login === null) {
+            return redirect()->route('profile.first-login');
+        }
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 

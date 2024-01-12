@@ -24,6 +24,9 @@ use Illuminate\Support\Facades\Auth;
 class MainController extends Controller
 {
     public function index() {
+        if (AUth::user()->first_login === null) {
+            return redirect()->route('profile.first-login');
+        }
         $data = [
 
         ];
