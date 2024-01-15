@@ -515,8 +515,8 @@ function modalDescriptionSet() {
         document.getElementById('modal-editor-register').classList.toggle('hidden');
         document.getElementById('modal-editor-register').classList.toggle('flex');
     });
-    document.getElementById('modal-editor-register').addEventListener('click', () => {
-        modalDescriptionEdit(target, descriptionEditor.getMarkdown());
+    document.getElementById('modal-editor-register').addEventListener('click', (e) => {
+        modalDescriptionEdit(e.target.getAttribute('data-id'), descriptionEditor.getMarkdown());
     });
 }
 
