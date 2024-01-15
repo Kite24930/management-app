@@ -6,6 +6,7 @@ use App\Models\CancelList;
 use App\Models\Comment;
 use App\Models\CompletedList;
 use App\Models\CompletedTask;
+use App\Models\Department;
 use App\Models\OtherList;
 use App\Models\OtherTask;
 use App\Models\PendingList;
@@ -15,6 +16,7 @@ use App\Models\Task;
 use App\Models\TaskList;
 use App\Models\TaskLog;
 use App\Models\TaskMember;
+use App\Models\TaskType;
 use App\Models\ToDoList;
 use App\Models\ToDoTask;
 use App\Models\User;
@@ -58,7 +60,10 @@ class MainController extends Controller
         $completed = CompletedList::whereIn('task_id', $task_list)->orderBy('id')->get();
         $other = OtherList::whereIn('task_id', $task_list)->orderBy('id')->get();
         $cancel = CancelList::whereIn('task_id', $task_list)->orderBy('id')->get();
-        $data = compact('target', 'task_list', 'tasks', 'members', 'comments', 'todo', 'progress', 'pending', 'completed', 'other', 'cancel', 'log', 'active_user');
+        $users = User::all();
+        $departments = Department::all();
+        $task_types = TaskType::all();
+        $data = compact('target', 'task_list', 'tasks', 'members', 'comments', 'todo', 'progress', 'pending', 'completed', 'other', 'cancel', 'log', 'active_user', 'users', 'departments', 'task_types');
         return view('tasks', $data);
     }
 }

@@ -27,5 +27,8 @@ class AppServiceProvider extends ServiceProvider
 //        $departments = Department::all();
 //        $task_types = TaskType::all();
 //        view()->share(compact('users', 'departments', 'task_types'));
+        if (env('APP_ENV') === 'production') {
+            \URL::forceScheme('https');
+        }
     }
 }
