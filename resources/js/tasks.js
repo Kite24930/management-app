@@ -390,7 +390,7 @@ function modalMainPersonChange(target, value) {
                 const mainPerson = document.getElementById('modal-main-person');
                 if (res.data.user.icon !== null) {
                     const icon = document.createElement('img');
-                    icon.src = '/storage/' + res.data.user.icon;
+                    icon.src = '/storage/' + res.data.user.id + '/' + res.data.user.icon;
                     icon.classList.add('w-8', 'h-8', 'rounded-full', 'object-cover', 'inline-block', 'mr-2');
                     icon.alt = res.data.user.name;
                     mainPerson.innerHTML = '';
@@ -413,7 +413,7 @@ function modalMainPersonChange(target, value) {
                     memberEl.classList.add('flex', 'items-center');
                     if (member.icon !== null) {
                         const icon = document.createElement('img');
-                        icon.src = '/storage/' + member.icon;
+                        icon.src = '/storage/' + member.id + '/' + member.icon;
                         icon.classList.add('w-8', 'h-8', 'rounded-full', 'object-cover', 'inline-block', 'mr-2');
                         icon.alt = member.name;
                         memberEl.append(icon);
@@ -464,7 +464,7 @@ function modalPersonChange(target) {
                     memberEl.classList.add('flex', 'items-center');
                     if (member.icon !== null) {
                         const icon = document.createElement('img');
-                        icon.src = '/storage/' + member.icon;
+                        icon.src = '/storage/' + member.id + '/' + member.icon;
                         icon.classList.add('w-8', 'h-8', 'rounded-full', 'object-cover', 'inline-block', 'mr-2');
                         icon.alt = member.name;
                         memberEl.append(icon);
@@ -1228,7 +1228,7 @@ function personChange(target, el) {
                 const mainPerson = document.getElementById('main-person-' + target);
                 if (res.data.user.icon !== null) {
                     const icon = document.createElement('img');
-                    icon.src = '/storage/' + res.data.user.icon;
+                    icon.src = '/storage/' + res.data.user.id + '/' + res.data.user.icon;
                     icon.classList.add('w-8', 'h-8', 'rounded-full', 'object-cover', 'inline-block', 'mr-2');
                     icon.alt = res.data.user.name;
                     mainPerson.innerHTML = '';
@@ -1410,7 +1410,7 @@ function taskAdd(el) {
                                     const mainPerson = document.getElementById('main-person-' + targetId);
                                     if (res.data.user.icon !== null) {
                                         const icon = document.createElement('img');
-                                        icon.src = '/storage/' + res.data.user.icon;
+                                        icon.src = '/storage/' + res.data.user.id + '/' + res.data.user.icon;
                                         icon.classList.add('w-8', 'h-8', 'rounded-full', 'object-cover', 'inline-block', 'mr-2');
                                         icon.alt = res.data.user.name;
                                         mainPerson.innerHTML = '';
