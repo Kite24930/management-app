@@ -52,7 +52,7 @@
                 @foreach($users as $user)
                     <li class="hover:bg-gray-100 rounded cursor-pointer p-2 task-person flex items-center" data-id="{{ $target }}" data-type="{{ $user->id }}">
                         @if($user->icon)
-                            <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" />
+                            <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="w-6 h-6" />
                         @else
                             <x-icons.person-circle class="w-6 h-6">{{ $user->name }}</x-icons.person-circle>
                         @endif
