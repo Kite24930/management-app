@@ -179,18 +179,22 @@
         <div class="flex items-center text-sm w-full">
             担当者：
             <div id="modal-member" data-dropdown-toggle="modal-member-list" class="cursor-pointer flex flex-wrap">
-                @foreach($members as $member)
-                    @if($member->is_main_person === 0)
-                        <div class="flex items-center">
-                            @if($member->icon)
-                                <x-icons.icon src="{{ $member->id.'/'.$member->icon }}" alt="{{ $member->name }}" class="w-8 h-8" />
-                            @else
-                                <x-icons.person-circle class="w-8 h-8 text-lg">{{ $member->name }}</x-icons.person-circle>
-                            @endif
-{{--                            {{ $member->name }}--}}
-                        </div>
-                    @endif
-                @endforeach
+                @if($members->count() === 1 && $members[0]->is_main_person === 1)
+                    <i class="bi bi-person-circle text-gray-400 text-3xl mr-2"></i>
+                @else
+                    @foreach($members as $member)
+                        @if($member->is_main_person === 0)
+                            <div class="flex items-center">
+                                @if($member->icon)
+                                    <x-icons.icon src="{{ $member->id.'/'.$member->icon }}" alt="{{ $member->name }}" class="w-8 h-8" />
+                                @else
+                                    <x-icons.person-circle class="w-8 h-8 text-lg">{{ $member->name }}</x-icons.person-circle>
+                                @endif
+                                {{--                            {{ $member->name }}--}}
+                            </div>
+                        @endif
+                    @endforeach
+                @endif
             </div>
             <div id="modal-member-list" class="hidden">
                 <ul class="flex flex-col gap-2 bg-white pt-4 p-2 border rounded h-[200px] overflow-y-auto">
