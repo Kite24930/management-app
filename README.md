@@ -7,12 +7,12 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Vite 5.0 対応
+~~## Vite 5.0 対応~~
 
-Vite 5.0において、build時に生成される`manifest.json`のディレクトリが変更されました。
-build直下 → build/.vite直下
+~~Vite 5.0において、build時に生成される`manifest.json`のディレクトリが変更されました。~~
+~~build直下 → build/.vite直下~~
 
-そのため、`composer install`後に、`vendor/laravel/framework/src/Illuminate/Foundation/Vite.php`の725行目を以下のように変更してください。
+~~そのため、`composer install`後に、`vendor/laravel/framework/src/Illuminate/Foundation/Vite.php`の725行目を以下のように変更してください。~~
 
 ```php
 // 725行目
