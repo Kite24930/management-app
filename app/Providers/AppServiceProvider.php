@@ -23,9 +23,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // 共有変数
-        $users = User::all();
-        $departments = Department::all();
-        $task_types = TaskType::all();
-        view()->share(compact('users', 'departments', 'task_types'));
+//        $users = User::all();
+//        $departments = Department::all();
+//        $task_types = TaskType::all();
+//        view()->share(compact('users', 'departments', 'task_types'));
     }
 }

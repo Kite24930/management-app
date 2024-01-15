@@ -23,6 +23,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [MainController::class, 'index'])->name('index');
     Route::get('/tasks/{id?}', [MainController::class, 'tasks'])->name('tasks');
 
+    Route::group(['middleware' => ['role:admin']], function () {
+        Route::get('/admin', [MainController::class, 'admin'])->name('admin');
+    });
+
+    Route::group(['middleware' => ['role:manager']], function () {
+        Route::get('/manager', [MainController::class, 'manager'])->name('manager');
+    });
+
     Route::get('/profile/first-login', [ProfileController::class, 'firstLogin'])->name('profile.first-login');
     Route::put('/profile/first-login', [ProfileController::class, 'firstLoginUpdate'])->name('profile.first-login-update');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
