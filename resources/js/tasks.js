@@ -956,7 +956,7 @@ function modalSubTaskAddFunction() {
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(view, 'text/html');
                         const taskEl = document.createElement('li');
-                        taskEl.classList.add('w-full', 'flex', 'items-center', 'gap-6', 'px-2');
+                        taskEl.classList.add('w-full', 'flex', 'items-center', 'gap-6', 'px-2', 'py-2');
                         taskEl.innerHTML += doc.body.firstChild.innerHTML;
                         modalSubtask.append(taskEl);
                     });
