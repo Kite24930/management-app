@@ -6,7 +6,6 @@ import Editor from "@toast-ui/editor";
 import codeSyntaxHighlight from "@toast-ui/editor-plugin-code-syntax-highlight";
 import tableMergedCellPlugin from "@toast-ui/editor-plugin-table-merged-cell";
 import colorSyntax from "@toast-ui/editor-plugin-color-syntax";
-import { Modal, Dropdown } from "flowbite";
 
 const todo = document.getElementById('todo');
 const progress = document.getElementById('progress');
