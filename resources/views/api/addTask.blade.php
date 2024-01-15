@@ -52,9 +52,9 @@
                 @foreach($users as $user)
                     <li class="hover:bg-gray-100 rounded cursor-pointer p-2 task-person flex items-center" data-id="{{ $target }}" data-type="{{ $user->id }}">
                         @if($user->icon)
-                            <x-icons.icon src="{{ $task->main_person_id.'/'.$task->main_person_icon }}" alt="{{ $task->main_person_name }}" />
+                            <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" />
                         @else
-                            <i class="bi bi-person-circle text-gray-400 mr-2"></i>
+                            <x-icons.person-circle class="w-6 h-6">{{ $user->name }}</x-icons.person-circle>
                         @endif
                         {{ $user->name }}
                     </li>
@@ -63,9 +63,9 @@
         </div>
     </div>
     <div class="flex justify-center items-center">
-        <input type="date" value="" class="border-none w-full rounded start_date" data-id="{{ $target }}">
+        <input type="date" value="" class="border-none w-full rounded start_date text-xs" data-id="{{ $target }}">
         〜
-        <input type="date" value="" class="border-none w-full rounded end_date" data-id="{{ $target }}">
+        <input type="date" value="" class="border-none w-full rounded end_date text-xs" data-id="{{ $target }}">
     </div>
     <div class="flex justify-center w-full">
         <button id="{{ __('register-'.$target) }}" class="bg-green-300 text-white flex py-2 px-4 rounded border border-green-700 hover:bg-green-500 register" type="button" data-id="{{ $target }}">

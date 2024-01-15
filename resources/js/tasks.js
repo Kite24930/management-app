@@ -1436,6 +1436,7 @@ function taskAdd(el) {
                             });
                     });
                 });
+                document.querySelector('.task-title[data-id="' + targetId + '"]').focus();
             })
             .catch((error) => {
                 console.log(error);
