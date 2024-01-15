@@ -962,6 +962,7 @@ function modalSubTaskAddFunction() {
                     });
                     modalSubTaskFunctionSet();
                     modalProgressBarSet();
+                    initFlowbite();
                     indicatorSuccess();
                 } else {
                     window.alert('サブタスクの追加に失敗しました。');

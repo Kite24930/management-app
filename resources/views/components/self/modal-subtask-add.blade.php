@@ -1,5 +1,5 @@
-<li class="flex w-full items-center gap-2 px-2">
-    <div id="{{ __('modal-sub-priority-0') }}" data-dropdown-toggle="{{ __('modal-sub-priority-list-0') }}" class="cursor-pointer w-20" data-id="0" data-priority="3">
+<li class="flex w-full items-center gap-2 px-2 py-2">
+    <div id="{{ __('modal-sub-priority-0') }}" data-dropdown-toggle="{{ __('modal-sub-priority-list-0') }}" class="cursor-pointer w-20 flex justify-center items-center" data-id="0" data-priority="3">
         <x-icons.middle />
     </div>
     <div id="{{ __('modal-sub-priority-list-0') }}" class="hidden">
@@ -22,7 +22,7 @@
         </ul>
     </div>
     <div class="flex-1">
-        <input type="text" id="{{ __('modal-sub-title-0') }}" class="border-none rounded-lg w-full text-sm py-1 my-2" value="">
+        <input type="text" id="{{ __('modal-sub-title-0') }}" class="border-none rounded-lg w-full text-sm py-1 h-8 modal-sub-add-title" data-id="" value="">
     </div>
     <div id="{{ __('modal-sub-main-0') }}" data-dropdown-toggle="{{ __('modal-sub-main-list-0') }}" class="cursor-pointer" data-person="0">
         <i class="bi bi-person-circle text-gray-400 text-2xl mr-2"></i>
