@@ -60,11 +60,19 @@ class ProfileController extends Controller
     {
         try {
             $request->user()->fill($request->validated());
+            $request->validate([
+                'icon' => ['nullable', 'image', 'max:2048'],
+            ],
+            [
+                'icon.max' => 'アイコンは2MB以下のファイルを選択してください。',
+            ]);
 
-            $file = $request->file('icon');
-            $fileName = $file->getClientOriginalName();
-            Storage::disk('public')->putFileAs(Auth::id(), $file, $fileName);
-            $request->user()->icon = $fileName;
+            if ($request->hasFile('icon')) {
+                $file = $request->file('icon');
+                $fileName = $file->getClientOriginalName();
+                Storage::disk('public')->putFileAs(Auth::id(), $file, $fileName);
+                $request->user()->icon = $fileName;
+            }
 
             if ($request->user()->isDirty('email')) {
                 $request->user()->email_verified_at = null;
