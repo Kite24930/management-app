@@ -163,11 +163,11 @@
                 <ul class="flex flex-col gap-2 bg-white pt-4 p-2 border rounded h-[200px] overflow-y-auto">
                     @foreach($users as $user)
                         <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-main-person flex items-center" data-id="{{ $task->task_id }}" data-person="{{ $user->id }}">
-                            @if($user->icon)
-                                <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="w-6 h-6" />
-                            @else
+{{--                            @if($user->icon)--}}
+{{--                                <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="w-6 h-6" />--}}
+{{--                            @else--}}
                                 <x-icons.person-circle class="w-6 h-6 text-sm">{{ $user->name }}</x-icons.person-circle>
-                            @endif
+{{--                            @endif--}}
                             {{ $user->name }}
                         </li>
                     @endforeach
@@ -197,11 +197,11 @@
                     @foreach($users as $user)
                         <li class="hover:bg-gray-100 rounded cursor-pointer p-2 task-person flex items-center" data-id="{{ $task->task_id }}" data-type="{{ $user->id }}">
                             <input id="{{ __('modal-member-'.$user->id) }}" type="checkbox" class="mr-2 rounded modal-member" value="{{ $user->id }}" @if(in_array($user->id, $member_list)) checked @endif>
-                            @if($user->icon)
-                                <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="w-6 h-6" />
-                            @else
+{{--                            @if($user->icon)--}}
+{{--                                <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="w-6 h-6" />--}}
+{{--                            @else--}}
                                 <x-icons.person-circle class="w-6 h-6 text-sm">{{ $user->name }}</x-icons.person-circle>
-                            @endif
+{{--                            @endif--}}
                             {{ $user->name }}
                         </li>
                     @endforeach
