@@ -74,7 +74,7 @@
                     <li class="hover:bg-gray-100 rounded cursor-pointer p-2 task-person flex items-center" data-id="{{ $task->task_id }}" data-type="{{ $user->id }}">
                         @if($user->icon)
 {{--                            <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="w-6 h-6" />--}}
-                            <img src="{{ asset('storage/'.$user->id.'/'.$user->icon) }}" alt="{{ $user->name }}" class="w-6 h-6 rounded-full object-cover mr-2 inline-block">
+                            <x-icons.icon src="{{ $user->id.'/'.$user->icon }}" alt="{{ $user->name }}" class="" />
                         @else
                             <x-icons.person-circle class="w-6 h-6 text-sm">{{ $user->name }}</x-icons.person-circle>
                         @endif
