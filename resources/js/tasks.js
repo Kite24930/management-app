@@ -960,7 +960,7 @@ function modalSubTaskAddFunction() {
                         taskEl.innerHTML += doc.body.firstChild.innerHTML;
                         modalSubtask.append(taskEl);
                     });
-                    modalSubTaskFunction();
+                    modalSubTaskFunctionSet();
                     modalProgressBarSet();
                     indicatorSuccess();
                 } else {
