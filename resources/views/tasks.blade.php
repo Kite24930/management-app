@@ -73,7 +73,7 @@
                     <div class="flex items-center">
                         主担当者：
                         @if($target->main_person_icon)
-                            <x-icons.icon src="{{ $target->main_person_icon }}" alt="{{ $target->main_person_name }}" class="w-8 h-8" />
+                            <x-icons.icon src="{{ $target->main_person_id . '/' . $target->main_person_icon }}" alt="{{ $target->main_person_name }}" class="w-8 h-8" />
                         @else
                             <x-icons.person-circle class="w-6 h-6 text-sm">{{ $target->main_person_name }}</x-icons.person-circle>
                         @endif
