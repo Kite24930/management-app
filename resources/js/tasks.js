@@ -71,6 +71,136 @@ window.addEventListener('load', () => {
         initFunctions(target);
     });
 
+    const currentTask = document.getElementById('current-task');
+    if (currentTask) {
+        const currentTaskId = currentTask.getAttribute('data-id');
+        const currentPriority = document.getElementById('current-priority');
+        const currentPriorityItem = document.querySelectorAll('.current-task-priority');
+        currentPriorityItem.forEach((el) => {
+            el.addEventListener('click', () => {
+                indicatorPost();
+                let priorityEl = el;
+                while (priorityEl.tagName !== 'LI') {
+                    priorityEl = priorityEl.parentNode;
+                }
+                const sendData = {
+                    task_id: currentTaskId,
+                    priority: priorityEl.getAttribute('data-type'),
+                };
+                axios.post('/api/taskPriorityEdit', sendData)
+                    .then((res) => {
+                        console.log(res);
+                        if (res.data.status === 'success') {
+                            indicatorSuccess();
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(res.data.view, 'text/html');
+                            const targetEl = document.getElementById('current-priority');
+                            targetEl.innerHTML = doc.body.innerHTML;
+                            document.getElementById('current-priority-list').classList.toggle('hidden');
+                            initFlowbite();
+                        } else {
+                            window.alert('優先度の変更に失敗しました。');
+                            indicatorError();
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        indicatorError();
+                    });
+            });
+        });
+        const currentStatus = document.getElementById('current-status');
+        const currentStatusItem = document.querySelectorAll('.current-task-type');
+        currentStatusItem.forEach((el) => {
+            el.addEventListener('click', () => {
+                indicatorPost();
+                let statusEl = el;
+                while (statusEl.tagName !== 'LI') {
+                    statusEl = statusEl.parentNode;
+                }
+                const sendData = {
+                    task_id: currentTaskId,
+                    status: statusEl.getAttribute('data-type'),
+                };
+                axios.post('/api/taskStatusEdit', sendData)
+                    .then((res) => {
+                        console.log(res);
+                        if (res.data.status === 'success') {
+                            indicatorSuccess();
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(res.data.view, 'text/html');
+                            const targetEl = document.getElementById('current-status');
+                            targetEl.innerHTML = doc.body.innerHTML;
+                            document.getElementById('current-status-list').classList.toggle('hidden');
+                            initFlowbite();
+                        } else {
+                            window.alert('ステータスの変更に失敗しました。');
+                            indicatorError();
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        indicatorError();
+                    });
+            });
+        });
+        const currentDescriptionMd = document.getElementById('current-description');
+        const currentDescriptionViewerEl = document.getElementById('current-viewer');
+        const currentDescriptionEditorEl = document.getElementById('current-editor');
+        const currentDescriptionRegister = document.getElementById('current-editor-register');
+        const currentDescriptionViewer = new Editor.factory({
+            el: currentDescriptionViewerEl,
+            viewer: true,
+            initialValue: currentDescriptionMd.value,
+        });
+        currentDescriptionViewerEl.addEventListener('dblclick', () => {
+            currentDescriptionViewerEl.classList.toggle('hidden');
+            currentDescriptionEditorEl.classList.toggle('hidden');
+            currentDescriptionRegister.classList.toggle('hidden');
+            currentDescriptionRegister.classList.toggle('flex');
+        });
+        const currentDescriptionEditor = new Editor({
+            el: currentDescriptionEditorEl,
+            initialEditType: 'wysiwyg',
+            height: '300px',
+            plugins: [codeSyntaxHighlight, tableMergedCellPlugin, colorSyntax],
+            usageStatistics: false,
+            initialValue: currentDescriptionMd.value,
+            placeholder: 'タスクの詳細を入力してください。',
+        });
+        currentDescriptionRegister.addEventListener('click', () => {
+            const sendData = {
+                task_id: currentTaskId,
+                description: currentDescriptionEditor.getMarkdown(),
+            };
+            axios.post('/api/taskDescriptionEdit', sendData)
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        const modalViewer = document.getElementById('current-viewer');
+                        modalViewer.innerHTML = '';
+                        const viewer = new Editor.factory({
+                            el: modalViewer,
+                            viewer: true,
+                            initialValue: sendData.description,
+                        });
+                        currentDescriptionViewerEl.classList.toggle('hidden');
+                        currentDescriptionEditorEl.classList.toggle('hidden');
+                        currentDescriptionRegister.classList.toggle('hidden');
+                        currentDescriptionRegister.classList.toggle('flex');
+                        indicatorSuccess();
+                    } else {
+                        window.alert('詳細の変更に失敗しました。');
+                        indicatorError();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    indicatorError();
+                });
+        });
+    }
+
     indicator.classList.remove('bg-white');
     indicator.classList.add('bg-green-50');
     indicatorIcon.innerHTML = '<i class="bi bi-check2-circle"></i>'

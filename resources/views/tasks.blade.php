@@ -26,9 +26,9 @@
         @if($target)
             <div class="w-full max-w-2xl p-4 rounded-lg border flex flex-col gap-2 *:text-sm">
                 <div class="flex md:flex-row flex-col md:items-center md:justify-between gap-2">
-                    <div>親タスク：Mieet Plus</div>
+                    <div id="current-task" data-id="{{ $target->id }}">親タスク：Mieet Plus</div>
                     <div class="flex items-center">
-                        <div id="{{ __('priority-'.$target->task_id) }}" data-dropdown-toggle="{{ __('priority-list-'.$target->task_id) }}" class="cursor-pointer">
+                        <div id="{{ __('current-priority') }}" data-dropdown-toggle="{{ __('current-priority-list') }}" class="cursor-pointer">
                             優先度：
                             @switch($target->priority)
                                 @case(1) <x-icons.highest /> @break
@@ -38,28 +38,28 @@
                                 @case(5) <x-icons.lowest /> @break
                             @endswitch
                         </div>
-                        <div id="{{ __('priority-list-'.$target->task_id) }}" class="hidden">
+                        <div id="{{ __('current-priority-list') }}" class="hidden">
                             <ul class="flex flex-col gap-2 bg-white pt-4 pb-2 px-2 border rounded">
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="1">
+                                <li class="hover:bg-gray-100 rounded cursor-pointer p-2 current-task-priority" data-id="{{ $target->task_id }}" data-type="1">
                                     <x-icons.highest />
                                 </li>
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="2">
+                                <li class="hover:bg-gray-100 rounded cursor-pointer p-2 current-task-priority" data-id="{{ $target->task_id }}" data-type="2">
                                     <x-icons.high />
                                 </li>
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="3">
+                                <li class="hover:bg-gray-100 rounded cursor-pointer p-2 current-task-priority" data-id="{{ $target->task_id }}" data-type="3">
                                     <x-icons.middle />
                                 </li>
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="4">
+                                <li class="hover:bg-gray-100 rounded cursor-pointer p-2 current-task-priority" data-id="{{ $target->task_id }}" data-type="4">
                                     <x-icons.low />
                                 </li>
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="5">
+                                <li class="hover:bg-gray-100 rounded cursor-pointer p-2 current-task-priority" data-id="{{ $target->task_id }}" data-type="5">
                                     <x-icons.lowest />
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <div id="{{ __('type-'.$target->task_id) }}" data-dropdown-toggle="{{ __('type-list-'.$target->task_id) }}" class="cursor-pointer">
+                        <div id="{{ __('type-'.$target->task_id) }}" class="flex items-center">
                             Type：
                             @switch($target->type)
                                 @case(1) <x-icons.internal-project /> @break
@@ -67,38 +67,20 @@
                                 @case(3) <x-icons.head-office-order /> @break
                             @endswitch
                         </div>
-                        <div id="{{ __('type-list-'.$target->task_id) }}" class="hidden">
-                            <ul class="flex flex-col gap-2 bg-white pt-4 pb-2 px-2 border rounded">
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="1">
-                                    <x-icons.internal-project />
-                                </li>
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="2">
-                                    <x-icons.orders-receive />
-                                </li>
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="3">
-                                    <x-icons.head-office-order />
-                                </li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
                 <div class="flex md:flex-row flex-col md:items-center md:gap-10 gap-2">
                     <div class="flex items-center">
-                        作成者：
-                        @if($target->person_icon)
-                            <x-icons.icon src="{{ $target->person_icon }}" alt="{{ $target->person_name }}" />
-                        @endif
-                        {{ $target->person_name }}
-                    </div>
-                    <div class="flex items-center">
                         主担当者：
                         @if($target->main_person_icon)
-                            <x-icons.icon src="{{ $target->main_person_icon }}" alt="{{ $target->main_person_name }}" />
+                            <x-icons.icon src="{{ $target->main_person_icon }}" alt="{{ $target->main_person_name }}" class="w-8 h-8" />
+                        @else
+                            <x-icons.person-circle class="w-6 h-6 text-sm">{{ $target->main_person_name }}</x-icons.person-circle>
                         @endif
                         {{ $target->main_person_name }}
                     </div>
                     <div class="flex items-center">
-                        <div id="{{ __('status-'.$target->task_id) }}" data-dropdown-toggle="{{ __('status-list-'.$target->task_id) }}" class="cursor-pointer">
+                        <div id="{{ __('current-status') }}" data-dropdown-toggle="{{ __('current-status-list') }}" class="cursor-pointer">
                             ステータス：
                             @switch($target->status)
                                 @case(1) <x-icons.todo /> @break
@@ -109,22 +91,25 @@
                                 @case(6) <x-icons.cancel /> @break
                             @endswitch
                         </div>
-                        <div id="{{ __('status-list-'.$target->task_id) }}" class="hidden">
+                        <div id="{{ __('current-status-list') }}" class="hidden">
                             <ul class="flex flex-col gap-2 bg-white pt-4 pb-2 px-2 border rounded">
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="1">
+                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 current-task-type" data-id="{{ $target->task_id }}" data-type="0">
                                     <x-icons.todo />
                                 </li>
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="2">
+                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 current-task-type" data-id="{{ $target->task_id }}" data-type="1">
                                     <x-icons.progress />
                                 </li>
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="3">
+                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 current-task-type" data-id="{{ $target->task_id }}" data-type="2">
                                     <x-icons.pending />
                                 </li>
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="4">
+                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 current-task-type" data-id="{{ $target->task_id }}" data-type="3">
                                     <x-icons.completed />
                                 </li>
-                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 task-type" data-id="{{ $target->task_id }}" data-type="5">
+                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 current-task-type" data-id="{{ $target->task_id }}" data-type="4">
                                     <x-icons.other />
+                                </li>
+                                <li class="hover:bg-gray-100 rounded cursor-pointer pt-2 current-task-type" data-id="{{ $target->task_id }}" data-type="5">
+                                    <x-icons.cancel />
                                 </li>
                             </ul>
                         </div>
@@ -134,7 +119,13 @@
                     <div>開始日：{{ $target->start_date }}</div>
                     <div>終了予定日：{{ $target->end_date }}</div>
                 </div>
-                <div class="viewer"></div>
+                <textarea name="current-description" id="current-description" class="hidden">{{ $target->description }}</textarea>
+                <div id="current-viewer" class="viewer"></div>
+                <div id="current-editor" class="editor hidden"></div>
+                <button id="current-editor-register" class="bg-white p-2 border hidden items-center justify-center" data-id="{{ $target->id }}">
+                    <i class="bi bi-node-plus-fill text-lg mr-2"></i>
+                    register description
+                </button>
             </div>
         @endif
         <div class="h-[80dvh] w-full px-4 flex overflow-x-auto whitespace-nowrap">
