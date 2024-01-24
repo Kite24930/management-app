@@ -20,7 +20,7 @@
                             タスクリストを開く
                         </a>
                     </li>
-                    <li class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-menu *:text-red-700 text-red-700" data-id="{{ $task->id }}">
+                    <li id="task-delete" class="hover:bg-gray-100 rounded cursor-pointer p-2 modal-menu *:text-red-700 text-red-700" data-id="{{ $task->id }}">
                         <i class="bi bi-trash mr-2"></i>
                         削除
                     </li>

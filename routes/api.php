@@ -43,3 +43,4 @@ Route::post('/subTaskCount', [ApiController::class, 'subTaskCount'])->name('subT
 Route::post('/modalCommentAdd', [ApiController::class, 'modalCommentAdd'])->name('modalCommentAdd');
 Route::post('/modalCommentEdit', [ApiController::class, 'modalCommentEdit'])->name('modalCommentEdit');
 Route::post('/modalCommentDelete', [ApiController::class, 'modalCommentDelete'])->name('modalCommentDelete');
+Route::delete('/taskDelete/{id}', [ApiController::class, 'taskDelete'])->name('taskDelete');

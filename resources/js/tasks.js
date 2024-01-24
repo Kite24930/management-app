@@ -311,6 +311,9 @@ function taskEdit(target) {
                     modalPersonChange(target);
                 });
             });
+            document.getElementById('task-delete').addEventListener('click', (e) => {
+                taskDelete(e.target);
+            });
             modalDescriptionSet();
             modalProgressBarSet();
             modalSubTaskFunctionSet();
@@ -1715,4 +1718,26 @@ function indicatorError() {
     indicator.classList.add('bg-red-50');
     indicatorIcon.innerHTML = '<i class="bi bi-x-circle"></i>'
     indicatorText.innerHTML = 'failed';
+}
+
+function taskDelete(el) {
+    if (window.confirm('タスクを削除しますか？')) {
+        indicatorPost();
+        const taskId = el.getAttribute('data-id');
+        axios.delete('/api/taskDelete/' + taskId)
+            .then((res) => {
+                console.log(res);
+                if (res.data.status === 'success') {
+                    indicatorSuccess();
+                    window.location.reload();
+                } else {
+                    window.alert('タスクの削除に失敗しました。');
+                    indicatorError();
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                indicatorError();
+            });
+    }
 }

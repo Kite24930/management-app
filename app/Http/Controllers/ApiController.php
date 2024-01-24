@@ -133,7 +133,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskStatusEdit(Request $request) {
+    public function taskStatusEdit(Request $request) {
         $request->validate([
             'status' => 'required',
             'task_id' => 'required',
@@ -203,7 +203,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskTitleEdit(Request $request) {
+    public function taskTitleEdit(Request $request) {
         $request->validate([
             'title' => 'required',
             'task_id' => 'required',
@@ -224,7 +224,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskTypeEdit(Request $request) {
+    public function taskTypeEdit(Request $request) {
         $request->validate([
             'type' => 'required',
             'task_id' => 'required',
@@ -257,7 +257,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskPriorityEdit(Request $request) {
+    public function taskPriorityEdit(Request $request) {
         $request->validate([
             'priority' => 'required',
             'task_id' => 'required',
@@ -296,7 +296,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskMainMemberEdit(Request $request) {
+    public function taskMainMemberEdit(Request $request) {
         $request->validate([
             'member_id' => 'required',
             'task_id' => 'required',
@@ -331,7 +331,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskStartDateEdit(Request $request) {
+    public function taskStartDateEdit(Request $request) {
         $request->validate([
             'start_date' => 'required',
             'task_id' => 'required',
@@ -352,7 +352,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskStartDateClear(Request $request) {
+    public function taskStartDateClear(Request $request) {
         $request->validate([
             'task_id' => 'required',
         ]);
@@ -372,7 +372,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskEndDateEdit(Request $request) {
+    public function taskEndDateEdit(Request $request) {
         $request->validate([
             'end_date' => 'required',
             'task_id' => 'required',
@@ -393,7 +393,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskEndDateClear(Request $request) {
+    public function taskEndDateClear(Request $request) {
         $request->validate([
             'task_id' => 'required',
         ]);
@@ -413,7 +413,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskTypeChange(Request $request) {
+    public function taskTypeChange(Request $request) {
         try {
             switch ($request->type) {
                 case 1:
@@ -439,7 +439,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskPriorityChange(Request $request) {
+    public function taskPriorityChange(Request $request) {
         try {
             switch ($request->priority) {
                 case 1:
@@ -471,7 +471,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskMainMemberChange(Request $request) {
+    public function taskMainMemberChange(Request $request) {
         try {
             $user = User::find($request->member_id);
             return response()->json([
@@ -487,7 +487,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskStatusChange(Request $request) {
+    public function taskStatusChange(Request $request) {
         try {
             switch ($request->status) {
                 case 0:
@@ -522,7 +522,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskEdit(Request $request) {
+    public function taskEdit(Request $request) {
         try {
             $users = User::all();
             $departments = Department::all();
@@ -561,7 +561,7 @@ class ApiController extends Controller
         }
     }
 
-    function subTaskAdd(Request $request) {
+    public function subTaskAdd(Request $request) {
         try {
             $parentTask = Task::find($request->parent_id);
             $addTask = Task::create([
@@ -628,7 +628,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskMemberEdit(Request $request) {
+    public function taskMemberEdit(Request $request) {
         try {
             TaskMember::where('task_id', $request->task_id)->whereNot('is_main_person', 1)->delete();
             foreach ($request->members as $member_id) {
@@ -652,7 +652,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskOrderPost(Request $request) {
+    public function taskOrderPost(Request $request) {
         try {
             DB::beginTransaction();
             ToDoTask::whereIn('task_id', $request->all)->delete();
@@ -730,7 +730,7 @@ class ApiController extends Controller
         }
     }
 
-    function taskDescriptionEdit(Request $request) {
+    public function taskDescriptionEdit(Request $request) {
         try {
             $task = Task::find($request->task_id)->update(
                 ['description' => $request->description]
@@ -747,7 +747,7 @@ class ApiController extends Controller
         }
     }
 
-    function subTaskCount(Request $request) {
+    public function subTaskCount(Request $request) {
         try {
             $task_id = $request->task_id;
             $sub_tasks['all'] = Task::where('parent_id', $task_id)->count();
@@ -770,7 +770,7 @@ class ApiController extends Controller
         }
     }
 
-    function modalCommentAdd(Request $request) {
+    public function modalCommentAdd(Request $request) {
         try {
             $comment = Comment::create([
                 'task_id' => $request->task_id,
@@ -795,7 +795,7 @@ class ApiController extends Controller
         }
     }
 
-    function modalCommentEdit(Request $request) {
+    public function modalCommentEdit(Request $request) {
         try {
             $comment = Comment::find($request->comment_id)->update([
                 'comment' => $request->comment,
@@ -812,7 +812,7 @@ class ApiController extends Controller
         }
     }
 
-    function modalCommentDelete(Request $request) {
+    public function modalCommentDelete(Request $request) {
         try {
             $comment = Comment::find($request->comment_id)->delete();
             return response()->json([
@@ -823,6 +823,22 @@ class ApiController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed delete comment:'. $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function taskDelete($id) {
+        try {
+            $task = Task::find($id);
+            $task->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Task deleted successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed delete task:'. $e->getMessage(),
             ]);
         }
     }
