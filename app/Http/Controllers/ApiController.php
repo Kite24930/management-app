@@ -842,4 +842,83 @@ class ApiController extends Controller
             ]);
         }
     }
+
+    public function adminDepartmentPost(Request $request) {
+        try {
+            $department = Department::updateOrCreate(
+                ['id' => $request->id],
+                [
+                    'name' => $request->name,
+                    'parent_department' => $request->parent_department,
+                ]
+            );
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Department added successfully',
+                'department' => $department,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed add department:'. $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function adminUserCreate(Request $request) {
+        try {
+            $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'belong_to' => $request->belong_to,
+                    'password' => bcrypt('20220701'),
+                ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User added successfully',
+                'user' => $user,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed add user:'. $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function adminUserEdit(Request $request) {
+        try {
+            $user = User::find($request->id)->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'belong_to' => $request->belong_to,
+            ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User edited successfully',
+                'user' => $user,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed edit user:'. $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function adminUserDelete(Request $request) {
+        try {
+            $user = User::find($request->id);
+            $user->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User deleted successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed delete user:'. $e->getMessage(),
+            ]);
+        }
+    }
 }

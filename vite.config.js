@@ -23,6 +23,8 @@ export default defineConfig({
                 indexStyles: 'resources/css/index.css',
                 tasks: 'resources/js/tasks.js',
                 tasksStyles: 'resources/css/tasks.css',
+                department: 'resources/js/auth/department.js',
+                userList: 'resources/js/auth/user-list.js',
                 profileEdit: 'resources/js/profile/edit.js'
             },
         },

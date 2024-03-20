@@ -25,6 +25,9 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['middleware' => ['role:admin']], function () {
         Route::get('/admin', [MainController::class, 'admin'])->name('admin');
+        Route::get('/admin/department', [MainController::class, 'adminDepartment'])->name('admin.department');
+        Route::post('/admin/department', [MainController::class, 'adminDepartmentPost'])->name('admin.department');
+        Route::get('/admin/users/list', [MainController::class, 'adminUsersList'])->name('admin.users.list');
     });
 
     Route::group(['middleware' => ['role:manager']], function () {

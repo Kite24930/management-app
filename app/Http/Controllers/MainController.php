@@ -66,4 +66,26 @@ class MainController extends Controller
         $data = compact('target', 'task_list', 'tasks', 'members', 'comments', 'todo', 'progress', 'pending', 'completed', 'other', 'cancel', 'log', 'active_user', 'users', 'departments', 'task_types');
         return view('tasks', $data);
     }
+
+    public function admin() {
+        $data = [
+
+        ];
+        return view('auth.admin', $data);
+    }
+
+    public function adminDepartment() {
+        $data = [
+            'departments' => Department::all(),
+        ];
+        return view('auth.admin.department', $data);
+    }
+
+    public function adminUsersList() {
+        $data = [
+            'users' => User::all(),
+            'departments' => Department::all(),
+        ];
+        return view('auth.admin.users-list', $data);
+    }
 }

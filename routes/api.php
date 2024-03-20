@@ -44,3 +44,7 @@ Route::post('/modalCommentAdd', [ApiController::class, 'modalCommentAdd'])->name
 Route::post('/modalCommentEdit', [ApiController::class, 'modalCommentEdit'])->name('modalCommentEdit');
 Route::post('/modalCommentDelete', [ApiController::class, 'modalCommentDelete'])->name('modalCommentDelete');
 Route::delete('/taskDelete/{id}', [ApiController::class, 'taskDelete'])->name('taskDelete');
+Route::post('/admin/department', [ApiController::class, 'adminDepartmentPost'])->name('admin.department');
+Route::post('/admin/user/create', [ApiController::class, 'adminUserCreate'])->name('admin.user.create');
+Route::post('/admin/user/edit', [ApiController::class, 'adminUserEdit'])->name('admin.user.edit');
+Route::post('/admin/user/delete', [ApiController::class, 'adminUserDelete'])->name('admin.user.delete');
