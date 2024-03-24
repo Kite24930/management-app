@@ -23,8 +23,12 @@
         "bootstrap-icons": "^1.11.3",
         "chart.js": "^4.4.1",
         "flowbite": "^2.2.1",
+        "highlight.js": "^11.9.0",
         "jsqr": "^1.4.0",
+        "katex": "0.16.9",
         "qr-code-styling": "^1.6.0-rc.1",
+        "quill": "2.0.0-rc.3",
+        "quill-linkify": "^0.3.0",
         "sortablejs": "^1.15.1",
         "swiper": "^11.0.5"
     }

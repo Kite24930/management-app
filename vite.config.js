@@ -25,6 +25,10 @@ export default defineConfig({
                 tasksStyles: 'resources/css/tasks.css',
                 department: 'resources/js/auth/department.js',
                 userList: 'resources/js/auth/user-list.js',
+                notes: 'resources/js/notes.js',
+                notesStyles: 'resources/css/notes.css',
+                noteView: 'resources/js/notes/note-view.js',
+                noteEdit: 'resources/js/notes/note-edit.js',
                 profileEdit: 'resources/js/profile/edit.js'
             },
         },

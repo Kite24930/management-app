@@ -1,0 +1,135 @@
+@import "./app.css";
+@import url("https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap");
+@import "bootstrap-icons/font/bootstrap-icons.min.css";
+@import "highlight.js/styles/atom-one-dark.css";
+@import "quill/dist/quill.snow.css";
+root {
+  --primary-color: #333;
+  --slate-color: #626d71;
+  --ceramic: #cdcdc0;
+  --latte-color: #ddbc95;
+  --coffee-color: #b38867;
+  --decoration-font: "Rubik Doodle Shadow", system-ui;
+}
+
+@font-face {
+  font-family: "Aoharu Marker";
+  src: url("/storage/fonts/aoharu-marker-mini.otf");
+}
+@font-face {
+  font-family: "Chillout";
+  src: url("/storage/fonts/ChilloutTYP-Regular.otf");
+}
+.eng-deco {
+  font-family: "Rubik Doodle Shadow", system-ui;
+}
+
+.aoharu {
+  font-family: "Aoharu Marker", system-ui;
+}
+
+.chillout {
+  font-family: "Chillout", system-ui;
+}
+
+.text-slate {
+  color: #626d71;
+}
+
+.text-ceramic {
+  color: #cdcdc0;
+}
+
+.text-latte {
+  color: #ddbc95;
+}
+
+.text-coffee {
+  color: #b38867;
+}
+
+.bg-slate {
+  background-color: #626d71;
+}
+
+.bg-ceramic {
+  background-color: #cdcdc0;
+}
+
+.bg-latte {
+  background-color: #ddbc95;
+}
+
+.bg-coffee {
+  background-color: #b38867;
+}
+
+body {
+  padding-left: 10px;
+}
+
+header * {
+  color: #626d71;
+}
+@media (min-width: 768px) {
+  header.hide {
+    left: -310px;
+  }
+}
+header #headerToggleButton .text {
+  -ms-writing-mode: tb-rl;
+  writing-mode: vertical-rl;
+  text-orientation: sideways;
+}
+
+main {
+  transition-duration: 500ms;
+}
+main.full {
+  padding-left: 10px;
+}
+main .menu-icon {
+  background: linear-gradient(145deg, #eafaff, #c5d3e5);
+  box-shadow: 20px 20px 50px #838c98, -20px -20px 50px #ffffff;
+}
+main .menu-icon:hover {
+  background: linear-gradient(145deg, #c5d3e5, #eafaff);
+  box-shadow: 20px 20px 50px #838c98, -20px -20px 50px #ffffff;
+}
+main .ql-code-block-container {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+main .ql-code-block-container .ql-ui {
+  color: #1a202c;
+  font-size: 10px;
+  padding: 0 30px 0 6px;
+  line-height: 1.2rem;
+}
+main #note {
+  font-size: 1rem;
+  background-image: url("/storage/note_background.jpg");
+  background-size: 100% auto;
+  background-repeat: repeat-y;
+}
+main .ql-editor ol, main .ql-editor ul {
+  padding-left: 0.5rem;
+}
+main .ql-editor li {
+  padding-left: 1rem;
+}
+main .ql-editor li .ql-ui {
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+}
+main #updateBtn {
+  border-radius: 40px;
+  background: #70dbb2;
+  box-shadow: 5px 5px 20px #4e997d, -5px -5px 20px #92ffe7;
+}
+main #updateBtn:hover {
+  background: linear-gradient(145deg, #65c5a0, #78eabe);
+}
+
+/*# sourceMappingURL=notes.css.map */

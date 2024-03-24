@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\CompletedList;
 use App\Models\CompletedTask;
 use App\Models\Department;
+use App\Models\Note;
 use App\Models\OtherList;
 use App\Models\OtherTask;
 use App\Models\PendingList;
@@ -87,5 +88,34 @@ class MainController extends Controller
             'departments' => Department::all(),
         ];
         return view('auth.admin.users-list', $data);
+    }
+
+    public function notes() {
+        $data = [
+            'users' => User::all(),
+        ];
+        return view('notes', $data);
+    }
+
+    public function notesView($id) {
+        $data = [
+            'user' => User::find($id),
+            'id' => $id,
+            'notes' => Note::select('attributes', 'insert')->where('note_id', $id)->orderBy('sort')->get(),
+        ];
+        return view('notes.viewing', $data);
+    }
+
+    public function notesEdit($id) {
+        $data = [
+            'user' => User::find($id),
+            'id' => $id,
+            'notes' => Note::select('attributes', 'insert')->where('note_id', $id)->orderBy('sort')->get(),
+        ];
+        return view('notes.edit', $data);
+    }
+
+    public function notesEditPost($id, Request $request) {
+
     }
 }

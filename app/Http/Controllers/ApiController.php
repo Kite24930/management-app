@@ -10,6 +10,7 @@ use App\Models\CompletedList;
 use App\Models\CompletedTask;
 use App\Models\Department;
 use App\Models\MemberList;
+use App\Models\Note;
 use App\Models\OtherList;
 use App\Models\OtherTask;
 use App\Models\PendingList;
@@ -24,6 +25,7 @@ use App\Models\TaskType;
 use App\Models\ToDoList;
 use App\Models\ToDoTask;
 use App\Models\User;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -919,6 +921,75 @@ class ApiController extends Controller
                 'status' => 'error',
                 'message' => 'Failed delete user:'. $e->getMessage(),
             ]);
+        }
+    }
+
+    public function notesFetchUrl(Request $request) {
+        try {
+            $validated = $request->validate([
+                'url' => 'required|url',
+            ]);
+            $url = $validated['url'];
+            $client = new Client();
+            $response = $client->request('GET', $url, ['timeout' => 10]);
+            $html = (string)$response->getBody();
+            $pattern = '/<link\s+(?:[^>]*?\s+)?rel=["\'](?:shortcut\s+)?icon["\'](?:[^>]*?\s+)?href=["\']([^"\']+)["\']/i';
+            preg_match($pattern, $html, $matches);
+            $faviconUrl = $matches[1] ?? null;
+            if ($faviconUrl && !preg_match('/^https?:\/\//', $faviconUrl)) {
+                // URLからドメイン名のみを取得
+                $parsedUrl = parse_url($url);
+                $domain = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
+
+                // ファビコンURLを組み立てる
+                $faviconUrl = rtrim($domain, '/') . '/' . ltrim($faviconUrl, '/');
+            }
+            preg_match('/<title>([^<]+)<\/title>/i', $html, $matches);
+            $title = $matches[1] ?? null;
+            return response()->json([
+                'status' => 'success',
+                'message' => 'URL fetched successfully',
+                'favicon' => $faviconUrl,
+                'title' => $title,
+                'html' => $html,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed fetch URL:'. $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function notesUpdate(Request $request) {
+        try {
+            DB::beginTransaction();
+            $notes = Note::where('note_id', $request->id)->delete();
+            foreach ($request->contents as $index => $content) {
+                $attributes = null;
+                if (isset($content['attributes'])) {
+                    $attributes = json_encode($content['attributes']);
+                }
+                $note = Note::create([
+                    'note_id' => $request->id,
+                    'sort' => $index,
+                    'attributes' => $attributes,
+                    'insert' => $content['insert'],
+                ]);
+            }
+            $notes = Note::where('note_id', $request->id)->get();
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Note registered successfully',
+                'note' => $notes,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed register note:'. $e->getMessage(),
+            ], 500);
         }
     }
 }

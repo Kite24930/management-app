@@ -23,6 +23,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [MainController::class, 'index'])->name('index');
     Route::get('/tasks/{id?}', [MainController::class, 'tasks'])->name('tasks');
 
+    Route::get('/notes', [MainController::class, 'notes'])->name('notes');
+    Route::get('/notes/view/{id}', [MainController::class, 'notesView'])->name('notes.view');
+    Route::get('/notes/edit/{id}', [MainController::class, 'notesEdit'])->name('notes.edit');
+    Route::post('/notes/edit/{id}', [MainController::class, 'notesEditPost'])->name('notes.edit');
+
     Route::group(['middleware' => ['role:admin']], function () {
         Route::get('/admin', [MainController::class, 'admin'])->name('admin');
         Route::get('/admin/department', [MainController::class, 'adminDepartment'])->name('admin.department');
