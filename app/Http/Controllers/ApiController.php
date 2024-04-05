@@ -942,12 +942,8 @@ class ApiController extends Controller
     }
 
     public function notesFetchUrl(Request $request) {
-        try {
-//            $validated = $request->validate([
-//                'url' => 'required|url',
-//            ]);
-//            $url = $validated['url'];
-            foreach ($request->url as $url) {
+        foreach ($request->url as $url) {
+            try {
                 $client = new Client();
                 $response = $client->request('GET', $url, ['timeout' => 10]);
                 $html = (string)$response->getBody();
@@ -971,18 +967,24 @@ class ApiController extends Controller
                         'favicon' => $faviconUrl,
                     ]);
                 $results[] = $result;
+            } catch (\GuzzleHttp\Exception\RequestException $e) {
+                $results[] = new Link([
+                    'url' => $url,
+                    'title' => null,
+                    'favicon' => null,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed fetch URL:'. $e->getMessage(),
+                ], 500);
             }
-            return response()->json([
-                'status' => 'success',
-                'message' => 'URL fetched successfully',
-                'results' => $results,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed fetch URL:'. $e->getMessage(),
-            ], 500);
         }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'URL fetched successfully',
+            'results' => $results,
+        ]);
     }
 
     public function notesUpdate(Request $request) {
