@@ -46,7 +46,7 @@ window.addEventListener('load', () => {
 
     setNotes();
     setLink();
-    getFavicon();
+    // getFavicon();
 });
 
 document.querySelector('#toolbar .ql-index-item').addEventListener('click', () => {

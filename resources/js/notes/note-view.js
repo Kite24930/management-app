@@ -42,9 +42,9 @@ window.addEventListener('load', () => {
             hrefs.push(href);
         });
     }
-    if (hrefs.length > 0) {
-        getFavicon(hrefs);
-    }
+    // if (hrefs.length > 0) {
+    //     getFavicon(hrefs);
+    // }
 })
 
 const setNotes = () => {
