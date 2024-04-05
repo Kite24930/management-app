@@ -1,6 +1,6 @@
 <x-self.template title="PM Notes" css="notes.css">
     <main class="w-full md:pl-80 pt-24 md:pt-4 pb-24 flex flex-col flex-wrap items-center relative z-10 full min-h-screen bg-gray-100">
-        <h1 class="text-3xl text-slate font-bold mb-4">{{ __($user->name.'のノート') }}</h1>
+        <h1 class="text-3xl text-slate font-bold mb-4">{{ __($note_user->name.'のノート') }}</h1>
         <div id="toolbar">
             <span class="ql-formats">
                 <button class="ql-index-item">
