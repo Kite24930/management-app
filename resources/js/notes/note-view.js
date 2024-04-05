@@ -149,5 +149,8 @@ function setIndex(index, el) {
 
 function moveToIndex(index) {
     const target = document.getElementById(index);
-    target.scrollIntoView();
+    target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+    });
 }
