@@ -15,7 +15,9 @@
                     </button>
                 </div>
             </div>
-            <a href="{{ route('notes.edit', $id) }}" id="updateBtn" class="md:w-32 md:h-32 w-16 h-16 flex justify-center items-center text-white font-bold text-xl" type="button">EDIT</a>
+            @if($user->id === $id)
+                <a href="{{ route('notes.edit', $id) }}" id="updateBtn" class="md:w-32 md:h-32 w-16 h-16 flex justify-center items-center text-white font-bold text-xl" type="button">EDIT</a>
+            @endif
         </div>
     </main>
     <script>
