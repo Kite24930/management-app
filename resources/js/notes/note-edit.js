@@ -210,16 +210,28 @@ document.getElementById('updateBtn').addEventListener('click', (e) => {
     console.log('sendData', sendData);
     console.log('sendLinks', sendLinks);
     if (sendLinks.length > 0) {
-        axios.post('/api/notes/fetch/url', { url: sendLinks });
+        axios.post('/api/notes/fetch/url', { url: sendLinks })
+            .then((response) => {
+                console.log('response', response.data);
+                axios.post('/api/notes/update', sendData)
+                    .then((response) => {
+                        console.log('response', response.data);
+                        window.location.href = '/notes/view/' + noteId;
+                    })
+                    .catch((error) => {
+                        console.error('error', error);
+                    });
+            });
+    } else {
+        axios.post('/api/notes/update', sendData)
+            .then((response) => {
+                console.log('response', response.data);
+                window.location.href = '/notes/view/' + noteId;
+            })
+            .catch((error) => {
+                console.error('error', error);
+            });
     }
-    axios.post('/api/notes/update', sendData)
-        .then((response) => {
-            console.log('response', response.data);
-            window.location.href = '/notes/view/' + noteId;
-        })
-        .catch((error) => {
-            console.error('error', error);
-        });
 });
 
 const linkReset = () => {
