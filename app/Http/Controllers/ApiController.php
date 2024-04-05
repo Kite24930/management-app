@@ -974,10 +974,11 @@ class ApiController extends Controller
                     'favicon' => null,
                 ]);
             } catch (\Exception $e) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Failed fetch URL:'. $e->getMessage(),
-                ], 500);
+                $results[] = new Link([
+                    'url' => $url,
+                    'title' => null,
+                    'favicon' => null,
+                ]);
             }
         }
         return response()->json([
