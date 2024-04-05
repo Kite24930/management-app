@@ -100,7 +100,8 @@ class MainController extends Controller
 
     public function notesView($id) {
         $data = [
-            'user' => User::find($id),
+            'note_user' => User::find($id),
+            'user' => Auth::user(),
             'id' => $id,
             'notes' => Note::select('attributes', 'insert')->where('note_id', $id)->orderBy('sort')->get(),
             'links' => Link::all(),

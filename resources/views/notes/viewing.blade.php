@@ -15,7 +15,7 @@
                     </button>
                 </div>
             </div>
-            @if($user->id === $id)
+            @if($user->id === (int)$id)
                 <a href="{{ route('notes.edit', $id) }}" id="updateBtn" class="md:w-32 md:h-32 w-16 h-16 flex justify-center items-center text-white font-bold text-xl" type="button">EDIT</a>
             @endif
         </div>
@@ -24,6 +24,8 @@
         window.Laravel = {};
         window.Laravel.notes = @json($notes);
         window.Laravel.links = @json($links);
+        window.Laravel.user = @json($user);
+        window.Laravel.id = @json($id);
         console.log(window.Laravel);
     </script>
     @vite(['resources/js/notes/note-view.js'])
