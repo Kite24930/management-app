@@ -34,16 +34,16 @@ window.addEventListener('load', () => {
 
     const links = document.querySelectorAll('.ql-editor a');
     // console.log('links', links);
+    let hrefs = [];
     if (links.length > 0) {
         links.forEach((link) => {
             const href = link.getAttribute('href');
             // console.log('href', href);
-            const favicon = document.querySelector('#note a[href="' + href + '"] img');
-            // console.log('favicon', favicon);
-            if (favicon === null) {
-                getFavicon(href);
-            }
+            hrefs.push(href);
         });
+    }
+    if (hrefs.length > 0) {
+        getFavicon(hrefs);
     }
 })
 
@@ -58,23 +58,59 @@ const setNotes = () => {
     quill.setContents(contents);
 }
 
-const getFavicon = (url) => {
-    axios.post('/api/notes/fetch/url', { url: url })
-        .then((response) => {
-            console.log('response', response.data);
-            const link = document.querySelector('#note a[href="' + url + '"]');
-            if (response.data.favicon !== null || response.data.title !== null) {
+function getFavicon (url) {
+    let registered = [];
+    let notRegistered = [];
+    url.forEach((u) => {
+        if (Laravel.links.find(({url}) => url === u) !== undefined) {
+            registered.push(u);
+        } else {
+            notRegistered.push(u);
+        }
+    });
+    if (registered.length > 0) {
+        registered.forEach((u) => {
+            const linkData = Laravel.links.find(({url}) => url === u);
+            if (linkData !== undefined) {
+                const link = document.querySelector('#note a[href="' + u + '"]');
                 link.innerHTML = '';
+                if (linkData.favicon !== null) {
+                    const favicon = document.createElement('img');
+                    favicon.src = linkData.favicon;
+                    favicon.classList.add('favicon-img', 'w-4', 'h-4', 'object-contain', 'inline-block', 'mr-2');
+                    link.appendChild(favicon);
+                }
+                link.innerHTML += linkData.title;
                 link.classList.add('px-2', 'border', 'border-gray-300', 'rounded', 'shadow', 'mb-2', 'inline-block');
             }
-            if (response.data.favicon !== null) {
-                const favicon = document.createElement('img');
-                favicon.src = response.data.favicon;
-                favicon.classList.add('favicon-img', 'w-4', 'h-4', 'object-contain', 'inline-block', 'mr-2');
-                link.appendChild(favicon);
-            }
-            if (response.data.title !== null) {
-                link.innerHTML += response.data.title;
-            }
         });
+    }
+    if (notRegistered.length > 0) {
+        axios.post('/api/notes/fetch/url', {
+            url: notRegistered
+        })
+        .then((response) => {
+            response.data.results.forEach((result) => {
+                const link = document.querySelector('#note a[href="' + result.url + '"]');
+                if (result.favicon !== null || result.title !== null) {
+                    link.innerHTML = '';
+                    link.classList.add('px-2', 'border', 'border-gray-300', 'rounded', 'shadow', 'mb-2', 'inline-block');
+                }
+                if (result.favicon !== null) {
+                    const favicon = document.createElement('img');
+                    favicon.src = result.favicon;
+                    favicon.classList.add('favicon-img', 'w-4', 'h-4', 'object-contain', 'inline-block', 'mr-2');
+                    link.appendChild(favicon);
+                }
+                if (result.title !== null) {
+                    link.innerHTML += result.title;
+                }
+            });
+        })
+        .catch(
+            (error) => {
+                console.error('error', error);
+            }
+        );
+    }
 }

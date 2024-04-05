@@ -1,8 +1,9 @@
 @import "./app.css";
 @import url('https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap');
 @import "bootstrap-icons/font/bootstrap-icons.min.css";
-@import "highlight.js/styles/atom-one-dark.css";
+@import "highlight.js/styles/night-owl.min.css";
 @import "quill/dist/quill.snow.css";
+@import "flowbite/dist/flowbite.min.css";
 
 root {
     --primary-color: #333;
@@ -127,6 +128,13 @@ main {
         background-repeat: repeat-y;
     }
 
+    .ql-toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background-color: #f8f9fa;
+    }
+
     .ql-editor {
         ol, ul {
             padding-left: .5rem;
@@ -137,6 +145,11 @@ main {
                 top: 0;
                 bottom: 0;
                 margin: auto 0;
+            }
+            @for $i from 1 through 10 {
+                &.ql-indent-#{$i}:not(.ql-direction-rtl) {
+                    padding-left: #{$i * 3}rem;
+                }
             }
         }
     }

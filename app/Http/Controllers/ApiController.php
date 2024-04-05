@@ -9,6 +9,7 @@ use App\Models\CommentList;
 use App\Models\CompletedList;
 use App\Models\CompletedTask;
 use App\Models\Department;
+use App\Models\Link;
 use App\Models\MemberList;
 use App\Models\Note;
 use App\Models\OtherList;
@@ -924,34 +925,57 @@ class ApiController extends Controller
         }
     }
 
+    public function notesSetUrl(Request $request) {
+        try {
+            $links = Link::whereIn('url', $request->url)->get();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'URL set successfully',
+                'note' => $links,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed set URL:'. $e->getMessage(),
+            ]);
+        }
+    }
+
     public function notesFetchUrl(Request $request) {
         try {
-            $validated = $request->validate([
-                'url' => 'required|url',
-            ]);
-            $url = $validated['url'];
-            $client = new Client();
-            $response = $client->request('GET', $url, ['timeout' => 10]);
-            $html = (string)$response->getBody();
-            $pattern = '/<link\s+(?:[^>]*?\s+)?rel=["\'](?:shortcut\s+)?icon["\'](?:[^>]*?\s+)?href=["\']([^"\']+)["\']/i';
-            preg_match($pattern, $html, $matches);
-            $faviconUrl = $matches[1] ?? null;
-            if ($faviconUrl && !preg_match('/^https?:\/\//', $faviconUrl)) {
-                // URLからドメイン名のみを取得
-                $parsedUrl = parse_url($url);
-                $domain = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
+//            $validated = $request->validate([
+//                'url' => 'required|url',
+//            ]);
+//            $url = $validated['url'];
+            foreach ($request->url as $url) {
+                $client = new Client();
+                $response = $client->request('GET', $url, ['timeout' => 10]);
+                $html = (string)$response->getBody();
+                $pattern = '/<link\s+(?:[^>]*?\s+)?rel=["\'](?:shortcut\s+)?icon["\'](?:[^>]*?\s+)?href=["\']([^"\']+)["\']/i';
+                preg_match($pattern, $html, $matches);
+                $faviconUrl = $matches[1] ?? null;
+                if ($faviconUrl && !preg_match('/^https?:\/\//', $faviconUrl)) {
+                    // URLからドメイン名のみを取得
+                    $parsedUrl = parse_url($url);
+                    $domain = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
 
-                // ファビコンURLを組み立てる
-                $faviconUrl = rtrim($domain, '/') . '/' . ltrim($faviconUrl, '/');
+                    // ファビコンURLを組み立てる
+                    $faviconUrl = rtrim($domain, '/') . '/' . ltrim($faviconUrl, '/');
+                }
+                preg_match('/<title>([^<]+)<\/title>/i', $html, $matches);
+                $title = $matches[1] ?? null;
+                $result = Link::updateOrCreate(
+                    ['url' => $url],
+                    [
+                        'title' => $title,
+                        'favicon' => $faviconUrl,
+                    ]);
+                $results[] = $result;
             }
-            preg_match('/<title>([^<]+)<\/title>/i', $html, $matches);
-            $title = $matches[1] ?? null;
             return response()->json([
                 'status' => 'success',
                 'message' => 'URL fetched successfully',
-                'favicon' => $faviconUrl,
-                'title' => $title,
-                'html' => $html,
+                'results' => $results,
             ]);
         } catch (\Exception $e) {
             return response()->json([

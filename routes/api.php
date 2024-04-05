@@ -48,5 +48,6 @@ Route::post('/admin/department', [ApiController::class, 'adminDepartmentPost'])-
 Route::post('/admin/user/create', [ApiController::class, 'adminUserCreate'])->name('admin.user.create');
 Route::post('/admin/user/edit', [ApiController::class, 'adminUserEdit'])->name('admin.user.edit');
 Route::post('/admin/user/delete', [ApiController::class, 'adminUserDelete'])->name('admin.user.delete');
+Route::post('/notes/set/url', [ApiController::class, 'notesSetUrl'])->name('notes.set.url');
 Route::post('/notes/fetch/url', [ApiController::class, 'notesFetchUrl'])->name('notes.fetch.url');
 Route::post('/notes/update', [ApiController::class, 'notesUpdate'])->name('notes.update');

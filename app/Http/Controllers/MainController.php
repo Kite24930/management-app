@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\CompletedList;
 use App\Models\CompletedTask;
 use App\Models\Department;
+use App\Models\Link;
 use App\Models\Note;
 use App\Models\OtherList;
 use App\Models\OtherTask;
@@ -102,6 +103,7 @@ class MainController extends Controller
             'user' => User::find($id),
             'id' => $id,
             'notes' => Note::select('attributes', 'insert')->where('note_id', $id)->orderBy('sort')->get(),
+            'links' => Link::all(),
         ];
         return view('notes.viewing', $data);
     }
@@ -111,6 +113,7 @@ class MainController extends Controller
             'user' => User::find($id),
             'id' => $id,
             'notes' => Note::select('attributes', 'insert')->where('note_id', $id)->orderBy('sort')->get(),
+            'links' => Link::all(),
         ];
         return view('notes.edit', $data);
     }

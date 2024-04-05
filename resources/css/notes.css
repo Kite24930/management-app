@@ -1,8 +1,9 @@
 @import "./app.css";
 @import url("https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap");
 @import "bootstrap-icons/font/bootstrap-icons.min.css";
-@import "highlight.js/styles/atom-one-dark.css";
+@import "highlight.js/styles/night-owl.min.css";
 @import "quill/dist/quill.snow.css";
+@import "flowbite/dist/flowbite.min.css";
 root {
   --primary-color: #333;
   --slate-color: #626d71;
@@ -112,6 +113,12 @@ main #note {
   background-size: 100% auto;
   background-repeat: repeat-y;
 }
+main .ql-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: #f8f9fa;
+}
 main .ql-editor ol, main .ql-editor ul {
   padding-left: 0.5rem;
 }
@@ -122,6 +129,36 @@ main .ql-editor li .ql-ui {
   top: 0;
   bottom: 0;
   margin: auto 0;
+}
+main .ql-editor li.ql-indent-1:not(.ql-direction-rtl) {
+  padding-left: 3rem;
+}
+main .ql-editor li.ql-indent-2:not(.ql-direction-rtl) {
+  padding-left: 6rem;
+}
+main .ql-editor li.ql-indent-3:not(.ql-direction-rtl) {
+  padding-left: 9rem;
+}
+main .ql-editor li.ql-indent-4:not(.ql-direction-rtl) {
+  padding-left: 12rem;
+}
+main .ql-editor li.ql-indent-5:not(.ql-direction-rtl) {
+  padding-left: 15rem;
+}
+main .ql-editor li.ql-indent-6:not(.ql-direction-rtl) {
+  padding-left: 18rem;
+}
+main .ql-editor li.ql-indent-7:not(.ql-direction-rtl) {
+  padding-left: 21rem;
+}
+main .ql-editor li.ql-indent-8:not(.ql-direction-rtl) {
+  padding-left: 24rem;
+}
+main .ql-editor li.ql-indent-9:not(.ql-direction-rtl) {
+  padding-left: 27rem;
+}
+main .ql-editor li.ql-indent-10:not(.ql-direction-rtl) {
+  padding-left: 30rem;
 }
 main #updateBtn {
   border-radius: 40px;
