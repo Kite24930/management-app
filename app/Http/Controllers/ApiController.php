@@ -970,13 +970,13 @@ class ApiController extends Controller
             } catch (\GuzzleHttp\Exception\RequestException $e) {
                 $results[] = new Link([
                     'url' => $url,
-                    'title' => null,
+                    'title' => $url,
                     'favicon' => null,
                 ]);
             } catch (\Exception $e) {
                 $results[] = new Link([
                     'url' => $url,
-                    'title' => null,
+                    'title' => $url,
                     'favicon' => null,
                 ]);
             }
