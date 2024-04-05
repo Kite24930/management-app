@@ -56,6 +56,9 @@ const setNotes = () => {
         })
     });
     quill.setContents(contents);
+    document.querySelectorAll('h3').forEach((el, index) => {
+        setIndex(index, el);
+    });
 }
 
 function getFavicon (url) {
@@ -113,4 +116,38 @@ function getFavicon (url) {
             }
         );
     }
+}
+
+document.getElementById('indexBtn').addEventListener('click', () => {
+    const indexContainer = document.getElementById('indexContainer');
+    indexContainer.classList.remove('-right-40');
+    indexContainer.classList.add('right-0');
+});
+
+const indexCloseBtn = document.getElementById('closeIndexBtn');
+indexCloseBtn.addEventListener('click', () => {
+    const indexContainer = document.getElementById('indexContainer');
+    indexContainer.classList.remove('right-0');
+    indexContainer.classList.add('-right-40');
+});
+
+
+function setIndex(index, el) {
+    const targetId = 'index-' + index;
+    el.id = targetId;
+    const labelName = el.innerText;
+    const indexBtn = document.createElement('button');
+    indexBtn.innerText = labelName;
+    indexBtn.type = 'button';
+    indexBtn.setAttribute('data-target', targetId);
+    indexBtn.addEventListener('click', (e) => {
+        const target = e.target.getAttribute('data-target');
+        moveToIndex(target);
+    });
+    indexCloseBtn.before(indexBtn);
+}
+
+function moveToIndex(index) {
+    const target = document.getElementById(index);
+    target.scrollIntoView();
 }
