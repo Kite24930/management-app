@@ -31,20 +31,7 @@ window.addEventListener('load', () => {
     document.querySelector('.ql-toolbar').remove();
 
     setNotes();
-
-    const links = document.querySelectorAll('.ql-editor a');
-    // console.log('links', links);
-    let hrefs = [];
-    if (links.length > 0) {
-        links.forEach((link) => {
-            const href = link.getAttribute('href');
-            // console.log('href', href);
-            hrefs.push(href);
-        });
-    }
-    // if (hrefs.length > 0) {
-    //     getFavicon(hrefs);
-    // }
+    setLink();
 })
 
 const setNotes = () => {
@@ -59,6 +46,31 @@ const setNotes = () => {
     document.querySelectorAll('h3').forEach((el, index) => {
         setIndex(index, el);
     });
+}
+
+const setLink = () => {
+    const links = document.querySelectorAll('.ql-editor a');
+    let hrefs = [];
+    if (links.length > 0) {
+        links.forEach((link) => {
+            const linkData = Laravel.links.find(({url}) => url === link.getAttribute('href'));
+            if (typeof linkData !== 'undefined') {
+                if (linkData.favicon !== null || linkData.title !== null) {
+                    link.innerHTML = '';
+                    link.classList.add('px-2', 'border', 'border-gray-300', 'rounded', 'shadow', 'mb-2', 'inline-block');
+                }
+                if (linkData.favicon !== null) {
+                    const favicon = document.createElement('img');
+                    favicon.src = linkData.favicon;
+                    favicon.classList.add('favicon-img', 'w-4', 'h-4', 'object-contain', 'inline-block', 'mr-2');
+                    link.appendChild(favicon);
+                }
+                if (linkData.title !== null) {
+                    link.innerHTML += linkData.title;
+                }
+            }
+        });
+    }
 }
 
 function getFavicon (url) {
