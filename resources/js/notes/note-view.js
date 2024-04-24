@@ -132,7 +132,7 @@ function getFavicon (url) {
 
 document.getElementById('indexBtn').addEventListener('click', () => {
     const indexContainer = document.getElementById('indexContainer');
-    indexContainer.classList.remove('-right-40');
+    indexContainer.classList.remove('-right-60');
     indexContainer.classList.add('right-0');
 });
 
@@ -140,11 +140,12 @@ const indexCloseBtn = document.getElementById('closeIndexBtn');
 indexCloseBtn.addEventListener('click', () => {
     const indexContainer = document.getElementById('indexContainer');
     indexContainer.classList.remove('right-0');
-    indexContainer.classList.add('-right-40');
+    indexContainer.classList.add('-right-60');
 });
 
 
 function setIndex(index, el) {
+    const indexWrapper = document.getElementById('indexWrapper');
     const targetId = 'index-' + index;
     el.id = targetId;
     const labelName = el.innerText;
@@ -156,7 +157,7 @@ function setIndex(index, el) {
         const target = e.target.getAttribute('data-target');
         moveToIndex(target);
     });
-    indexCloseBtn.before(indexBtn);
+    indexWrapper.appendChild(indexBtn);
 }
 
 function moveToIndex(index) {

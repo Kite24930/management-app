@@ -9,8 +9,8 @@
                 <button id="indexBtn" type="button" class="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m422-232 207-248H469l29-227-185 267h139l-30 208ZM320-80l40-280H160l360-520h80l-40 320h240L400-80h-80Zm151-390Z"/></svg>INDEX
                 </button>
-                <div class="absolute bottom-0 -right-60 bg-gray-600 rounded-lg text-white p-4 flex flex-col gap-4 duration-300 w-40">
-                    <div id="indexContainer" class="text-white flex flex-col gap-4 w-full max-h-[500px] overflow-auto">
+                <div id="indexContainer" class="absolute bottom-0 -right-60 bg-gray-600 rounded-lg text-white p-4 flex flex-col gap-4 duration-300 w-40">
+                    <div id="indexWrapper" class="text-white flex flex-col gap-4 w-full max-h-[500px] overflow-auto">
 
                     </div>
                     <button id="closeIndexBtn" type="button" class="flex items-center gap-2 text-sm">
