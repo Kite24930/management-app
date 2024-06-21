@@ -155,6 +155,7 @@ class MainController extends Controller
             'report' => $report,
             'tasks' => ReportView::where('report_id', $id)->get(),
             'user' => User::find($report->user_id),
+            'login_user' => Auth::user(),
             'confirm' => ReportConfirmView::where('report_id', $id)->get(),
             'confirm_check' => $confirm,
         ];

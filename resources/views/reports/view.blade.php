@@ -6,7 +6,7 @@
                 <a href="{{ route('reports') }}" class="px-4 py-2 border rounded-lg text-slate hover:bg-[#626d71] hover:text-white duration-500">← back</a>
             </div>
             <div class="flex md:flex-row flex-col md:gap-2 gap-6 md:items-center items-start justify-between">
-                @if($report->user_id === $user->id)
+                @if($report->user_id === $login_user->id)
                     <div class="flex gap-4 items-center md:hidden">
                         <a href="{{ route('reports.edit', $report->id) }}" class="px-4 py-2 rounded-lg shadow bg-green-100 bg-opacity-70 hover:bg-green-200 duration-500 text-xl mr-4">
                             Edit
@@ -18,7 +18,7 @@
                     <label class="text-xs text-slate w-24">Report Date</label>
                     <div class="font-bold text-xl px-2 border-b border-blue-950">{{ $report->date }}</div>
                 </div>
-                @if($report->user_id === $user->id)
+                @if($report->user_id === $login_user->id)
                     <div class="md:flex gap-4 items-center hidden">
                         <a href="{{ route('reports.edit', $report->id) }}" class="px-4 py-2 rounded-lg shadow bg-green-100 bg-opacity-70 hover:bg-green-200 duration-500 text-xl mr-4">
                             Edit
@@ -81,7 +81,7 @@
                     </div>
                 @endforeach
             </div>
-            @if($confirm_check && $report->user_id !== $user->id)
+            @if($confirm_check && $report->user_id !== $login_user->id)
                 <div class="flex justify-end">
                     <a href="{{ route('reports.confirm', $report->id) }}" class="px-4 py-2 rounded-lg shadow bg-[#ffd5e6] bg-opacity-70 hover:bg-[#ff94be] duration-500 text-xl">
                         Confirm
