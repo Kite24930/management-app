@@ -173,7 +173,7 @@ class MainController extends Controller
 
     public function reportsAdd() {
         $my_tasks = TaskMember::where('member_id', Auth::user()->id)->pluck('task_id')->toArray();
-        $tasks = Task::whereIn('id', $my_tasks)->whereNotIn('status', [3, 5])->get();
+        $tasks = Task::whereIn('id', $my_tasks)->whereNotIn('status', [3, 5])->where('parent_id', 0)->get();
         $data = [
             'user' => User::find(Auth::user()->id),
             'tasks' => $tasks,
@@ -254,7 +254,7 @@ class MainController extends Controller
     public function reportsEdit($id) {
         $report = Report::find($id);
         $my_tasks = TaskMember::where('member_id', Auth::user()->id)->pluck('task_id')->toArray();
-        $tasks = Task::whereIn('id', $my_tasks)->whereNotIn('status', [3, 5])->get();
+        $tasks = Task::whereIn('id', $my_tasks)->whereNotIn('status', [3, 5])->where('parent_id', 0)->get();
         $data = [
             'report' => $report,
             'report_tasks' => ReportView::where('report_id', $id)->get(),
