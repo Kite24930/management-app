@@ -29,7 +29,13 @@ export default defineConfig({
                 notesStyles: 'resources/css/notes.css',
                 noteView: 'resources/js/notes/note-view.js',
                 noteEdit: 'resources/js/notes/note-edit.js',
-                profileEdit: 'resources/js/profile/edit.js'
+                profileEdit: 'resources/js/profile/edit.js',
+                report: 'resources/js/reports/reports.js',
+                reportStyles: 'resources/css/reports.css',
+                reportView: 'resources/js/reports/reports-view.js',
+                reportEdit: 'resources/js/reports/reports-edit.js',
+                reportAdd: 'resources/js/reports/reports-add.js',
+                reportSend: 'resources/js/reports/reports-send.js',
             },
         },
     }

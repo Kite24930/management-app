@@ -28,6 +28,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/notes/edit/{id}', [MainController::class, 'notesEdit'])->name('notes.edit');
     Route::post('/notes/edit/{id}', [MainController::class, 'notesEditPost'])->name('notes.edit');
 
+    Route::get('/reports', [MainController::class, 'reports'])->name('reports');
+    Route::get('/reports/view/{id}', [MainController::class, 'reportsView'])->name('reports.view');
+    Route::get('/reports/confirm/{id}', [MainController::class, 'reportsConfirm'])->name('reports.confirm');
+    Route::get('/reports/add', [MainController::class, 'reportsAdd'])->name('reports.add');
+    Route::post('/reports/add', [MainController::class, 'reportsAddPost'])->name('reports.add');
+    Route::get('/reports/send/{id}', [MainController::class, 'reportsSend'])->name('reports.send');
+    Route::post('/reports/send/{id}', [MainController::class, 'reportsSendPost'])->name('reports.send');
+    Route::get('/reports/edit/{id}', [MainController::class, 'reportsEdit'])->name('reports.edit');
+    Route::patch('/reports/edit/{id}', [MainController::class, 'reportsEditPost'])->name('reports.edit');
+    Route::get('/reports/delete/{id}', [MainController::class, 'reportsDelete'])->name('reports.delete');
+    Route::post('/reports/task/components', [MainController::class, 'reportsTaskComponents'])->name('reports.task.components');
+
     Route::group(['middleware' => ['role:admin']], function () {
         Route::get('/admin', [MainController::class, 'admin'])->name('admin');
         Route::get('/admin/department', [MainController::class, 'adminDepartment'])->name('admin.department');
