@@ -70,7 +70,7 @@
             </div>
             <div class="flex flex-col gap-2">
                 <div class="text-xs text-slate text-right">{{ __('Created at '.date('y-m-d H:i:s', strtotime($report->created_at))) }}</div>
-                @if($report->created_at !== $report->updated_at)
+                @if(strtotime($report->created_at) !== strtotime($report->updated_at))
                     <div class="text-xs text-slate text-right">{{ __('Updated at '.date('y-m-d H:i:s', strtotime($report->updated_at))) }}</div>
                 @endif
             </div>
