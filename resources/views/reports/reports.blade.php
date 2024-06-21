@@ -10,7 +10,7 @@
                 <div id="month" class="text-2xl eng-deco">{{ date('Y M') }}</div>
                 <x-secondary-button id="nextMonth">→</x-secondary-button>
             </div>
-            <div id="calendar" class="w-full h-[1000px]">
+            <div id="calendar" class="w-full h-[800px]">
 
             </div>
         </div>
