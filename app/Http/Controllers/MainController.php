@@ -240,7 +240,7 @@ class MainController extends Controller
             Mail::send('reports.mail', ['html' => $request->html], function ($message) use ($request) {
                 $message->to('main@mie-projectm.com');
                 $message->subject('From ' .$request->reporter . ' Daily Report on' . $request->date);
-                $message->from(env('DAILY_REPORT_RECEIVER'));
+                $message->from(env('DAILY_REPORT_RECEIVER'), 'Project M Daily Report');
                 $message->cc(env('DAILY_REPORT_RECEIVER'));
             });
 
