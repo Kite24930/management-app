@@ -36,6 +36,8 @@ export default defineConfig({
                 reportEdit: 'resources/js/reports/reports-edit.js',
                 reportAdd: 'resources/js/reports/reports-add.js',
                 reportSend: 'resources/js/reports/reports-send.js',
+                reportChart: 'resources/js/reports/reports-chart.js',
+                reportChartStyles: 'resources/css/reports-chart.css',
             },
         },
     }

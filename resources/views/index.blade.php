@@ -15,6 +15,11 @@
             <br class="hidden md:block">
             Daily Report
         </x-self.menu-icon>
+        <x-self.menu-icon route="reports.chart">
+            <i class="bi bi-journal-medical"></i>
+            <br class="hidden md:block">
+            Monthly Report
+        </x-self.menu-icon>
     </main>
     @vite(['resources/js/index.js'])
 </x-self.template>

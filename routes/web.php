@@ -40,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/delete/{id}', [MainController::class, 'reportsDelete'])->name('reports.delete');
     Route::post('/reports/task/components', [MainController::class, 'reportsTaskComponents'])->name('reports.task.components');
 
+    Route::get('reports/chart', [MainController::class, 'reportsChart'])->name('reports.chart');
+    Route::get('/reports/chart/data/{date}', [MainController::class, 'monthlyReportSummarizing'])->name('reports.chart.data');
+
     Route::group(['middleware' => ['role:admin']], function () {
         Route::get('/admin', [MainController::class, 'admin'])->name('admin');
         Route::get('/admin/department', [MainController::class, 'adminDepartment'])->name('admin.department');

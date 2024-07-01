@@ -22,7 +22,7 @@
         "@toast-ui/editor-plugin-color-syntax": "^3.1.0",
         "@toast-ui/editor-plugin-table-merged-cell": "^3.1.0",
         "bootstrap-icons": "^1.11.3",
-        "chart.js": "^4.4.1",
+        "chart.js": "^4.4.3",
         "flowbite": "^2.2.1",
         "highlight.js": "^11.9.0",
         "jsqr": "^1.4.0",

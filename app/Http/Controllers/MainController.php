@@ -316,4 +316,52 @@ class MainController extends Controller
             'num' => $num,
         ]);
     }
+
+    public function reportsChart() {
+        $summary = $this->monthlyReportSummarizing(date('Y-m-d'));
+        $max_date = Report::max('date');
+        $min_date = Report::min('date');
+        $report_ids = Report::whereBetween('date', [$min_date, $max_date])->orderBy('user_id')->pluck('id')->toArray();
+        $task_ids = ReportTask::whereIn('report_id', $report_ids)->distinct()->orderBy('task_id')->pluck('task_id')->toArray();
+        $period = [];
+        $target = $min_date;
+        if (date('n') !== date('n', strtotime($max_date))) {
+            $max_date = date('Y-m-01', strtotime($max_date . ' +1 month'));
+        }
+        while ($target <= $max_date) {
+            $period[] = date('Y-m', strtotime($target));
+            $target = date('Y-m-01', strtotime($target . ' +1 month'));
+        }
+        $data = [
+            'users' => User::all(),
+            'summary' => $summary,
+            'period' => $period,
+            'this_month' => date('Y-m'),
+            'tasks' => Task::where('parent_id', 0)->whereIn('id', $task_ids)->get(),
+            'min_date' => $min_date,
+            'max_date' => $max_date,
+        ];
+        return view('reports.chart', $data);
+    }
+
+    public function monthlyReportSummarizing($date) {
+        $users = User::all();
+        $start = date('Y-m-01', strtotime($date));
+        $end = date('Y-m-t', strtotime($date));
+        $task_ids = Report::whereBetween('date', [$start, $end])->pluck('id')->toArray();
+        $report_task_ids = ReportTask::whereIn('report_id', $task_ids)->distinct()->pluck('task_id')->toArray();
+        $tasks = Task::whereIn('id', $report_task_ids)->get();
+        $task_base_hours = [];
+        $user_base_hours = [];
+        foreach ($tasks as $task) {
+            foreach ($users as $user) {
+                $reports = Report::whereBetween('date', [$start, $end])->where('user_id', $user->id)->pluck('id')->toArray();
+                $task_base_hours[$task->title][$user->name] = ReportTask::whereIn('report_id', $reports)->where('task_id', $task->id)->sum('hours');
+                $user_base_hours[$user->name][$task->title] = ReportTask::whereIn('report_id', $reports)->where('task_id', $task->id)->sum('hours');
+            }
+        }
+        $target = date('Y-m', strtotime($date));
+
+        return compact('task_base_hours', 'user_base_hours', 'target', 'task_ids', 'tasks', 'report_task_ids');
+    }
 }
