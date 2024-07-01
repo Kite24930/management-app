@@ -16,7 +16,7 @@
             Daily Report
         </x-self.menu-icon>
         <x-self.menu-icon route="reports.chart">
-            <i class="bi bi-journal-medical"></i>
+            <i class="bi bi-bar-chart"></i>
             <br class="hidden md:block">
             Monthly Report
         </x-self.menu-icon>

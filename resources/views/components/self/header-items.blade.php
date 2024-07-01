@@ -7,6 +7,9 @@
 <x-self.menu-item route="reports">
     <i class="bi bi-journal-medical mr-2"></i>Daily Report
 </x-self.menu-item>
+<x-self.menu-item route="reports.chart">
+    <i class="bi bi-bar-chart mr-2"></i>Monthly Report
+</x-self.menu-item>
 <x-self.menu-item route="dashboard">
     <i class="bi bi-person-circle mr-2"></i>My Page
 </x-self.menu-item>
