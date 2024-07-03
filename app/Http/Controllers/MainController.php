@@ -412,6 +412,10 @@ class MainController extends Controller
         $period = [];
         $max_date = Target::max('target_month');
         $min_date = Target::min('target_month');
+        if ($max_date === null) {
+            $max_date = date('Y-m-d');
+            $min_date = date('Y-m-d');
+        }
         $target = $min_date;
         if (date('n') !== date('n', strtotime($max_date))) {
             $max_date = date('Y-m-01', strtotime($max_date . ' +1 month'));
