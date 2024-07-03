@@ -20,6 +20,16 @@
             <br class="hidden md:block">
             Monthly Report
         </x-self.menu-icon>
+        <x-self.menu-icon route="monthly.targets">
+            <i class="bi bi-flag"></i>
+            <br class="hidden md:block">
+            Monthly Target
+        </x-self.menu-icon>
+        <x-self.menu-icon route="invoices">
+            <i class="bi bi-receipt"></i>
+            <br class="hidden md:block">
+            Invoice
+        </x-self.menu-icon>
     </main>
     @vite(['resources/js/index.js'])
 </x-self.template>

@@ -7,6 +7,8 @@ use App\Models\Comment;
 use App\Models\CompletedList;
 use App\Models\CompletedTask;
 use App\Models\Department;
+use App\Models\Invoice;
+use App\Models\InvoiceView;
 use App\Models\Link;
 use App\Models\Note;
 use App\Models\OtherList;
@@ -22,6 +24,7 @@ use App\Models\ReportDetail;
 use App\Models\ReportProblem;
 use App\Models\ReportTask;
 use App\Models\ReportView;
+use App\Models\Target;
 use App\Models\Task;
 use App\Models\TaskList;
 use App\Models\TaskLog;
@@ -34,6 +37,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class MainController extends Controller
 {
@@ -363,5 +367,199 @@ class MainController extends Controller
         $target = date('Y-m', strtotime($date));
 
         return compact('task_base_hours', 'user_base_hours', 'target', 'task_ids', 'tasks', 'report_task_ids');
+    }
+
+    public function monthlyTargets() {
+        $period = [];
+        $max_date = Target::max('target_month');
+        $min_date = Target::min('target_month');
+        $target = $min_date;
+        if (date('n') !== date('n', strtotime($max_date))) {
+            $max_date = date('Y-m-01', strtotime($max_date . ' +1 month'));
+        }
+        while ($target <= $max_date) {
+            $period[] = date('Y-m', strtotime($target));
+            $target = date('Y-m-01', strtotime($target . ' +1 month'));
+        }
+        $start = date('Y-m-01');
+        $end = date('Y-m-t');
+        $targets = Target::whereBetween('target_month', [$start, $end])->orderBy('user_id')->get();
+        $data = [
+            'targets' => $targets,
+            'period' => $period,
+            'this_month' => date('Y-m'),
+            'users' => User::all(),
+            'active_user' => Auth::user(),
+        ];
+        return view('targets.targets', $data);
+    }
+
+    public function getMonthlyTargets(Request $request) {
+        $start = date('Y-m-01', strtotime($request->date));
+        $end = date('Y-m-t', strtotime($request->date));
+        $targets = Target::whereBetween('target_month', [$start, $end])->orderBy('user_id')->get();
+        $data = [
+            'targets' => $targets,
+        ];
+        return response()->json($data);
+    }
+
+    public function monthlyTargetsEdit($id, $date) {
+        $period = [];
+        $max_date = Target::max('target_month');
+        $min_date = Target::min('target_month');
+        $target = $min_date;
+        if (date('n') !== date('n', strtotime($max_date))) {
+            $max_date = date('Y-m-01', strtotime($max_date . ' +1 month'));
+        }
+        while ($target <= $max_date) {
+            $period[] = date('Y-m', strtotime($target));
+            $target = date('Y-m-01', strtotime($target . ' +1 month'));
+        }
+        $start = date('Y-m-01', strtotime($date));
+        $end = date('Y-m-t', strtotime($date));
+        $target = Target::where('user_id', $id)->whereBetween('target_month', [$start, $end])->first();
+        $data = [
+            'period' => $period,
+            'target_month' => date('Y-m', strtotime($date)),
+            'target' => $target,
+            'user' => Auth::user(),
+        ];
+        return view('targets.edit', $data);
+    }
+
+    public function monthlyTargetEditPost (Request $request) {
+        $request->validate([
+            'target_month' => 'required',
+            'user_id' => 'required|exists:users,id',
+            'target_description' => 'required',
+        ]);
+        try {
+            $target = Target::where('user_id', $request->user_id)->where('target_month', $request->target_month)->first();
+            if ($target === null) {
+                Target::create($request->all());
+            } else {
+                $target->update($request->all());
+            }
+            return response()->json(['status' => 'success', 'message' => 'Target updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function invoices() {
+        $invoices = InvoiceView::orderBy('issue_date', 'desc')->get();
+        $data = [
+            'invoices' => $invoices,
+        ];
+        return view('invoices.list', $data);
+    }
+
+    public function invoicesCreate() {
+        $data = [
+            'users' => User::all(),
+        ];
+        return view('invoices.create', $data);
+    }
+
+    public function invoicesCreatePost(Request $request) {
+        $request->validate([
+            'issue_date' => 'required|date',
+            'due_date' => 'required|date',
+            'issue_user_id' => 'required|exists:users,id',
+            'client_name' => 'required',
+            'subject' => 'required',
+            'amount' => 'required|numeric',
+            'description' => 'nullable',
+            'file_name' => 'required',
+            'file' => 'required|mimes:pdf',
+        ], [
+            'issue_date.required' => 'Issue date is required',
+            'due_date.required' => 'Due date is required',
+            'issue_user_id.required' => 'Issue user is required',
+            'client_name.required' => 'Client name is required',
+            'subject.required' => 'Subject is required',
+            'amount.required' => 'Amount is required',
+            'file_name.required' => 'File name is required',
+            'file.required' => 'File is required',
+            'file.mimes' => 'File must be in PDF format',
+        ]);
+        try {
+            $file = $request->file('file');
+            Storage::disk('public')->put('invoices/' . $request->file_name, $file->get());
+            Invoice::create($request->all());
+            return redirect()->route('invoices')->with('message', 'Invoice created successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('message', $e->getMessage());
+        }
+    }
+
+    public function invoicesEdit($id) {
+        $data = [
+            'invoice' => InvoiceView::where('id', $id)->first(),
+            'users' => User::all(),
+            'active_user' => Auth::user(),
+        ];
+        return view('invoices.edit', $data);
+    }
+
+    public function invoicesEditPost($id, Request $request) {
+        $request->validate([
+            'issue_date' => 'required|date',
+            'due_date' => 'required|date',
+            'issue_user_id' => 'required|exists:users,id',
+            'client_name' => 'required',
+            'subject' => 'required',
+            'amount' => 'required|numeric',
+            'description' => 'nullable',
+            'file_name' => 'required',
+            'file' => 'nullable|mimes:pdf',
+        ], [
+            'issue_date.required' => 'Issue date is required',
+            'due_date.required' => 'Due date is required',
+            'issue_user_id.required' => 'Issue user is required',
+            'client_name.required' => 'Client name is required',
+            'subject.required' => 'Subject is required',
+            'amount.required' => 'Amount is required',
+            'file_name.required' => 'File name is required',
+            'file.mimes' => 'File must be in PDF format',
+        ]);
+        try {
+            $invoice = Invoice::find($id);
+            $invoice->update($request->all());
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                Storage::disk('public')->put('invoices/' . $request->file_name, $file->get());
+            }
+            return redirect()->route('invoices')->with('message', 'Invoice updated successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('message', $e->getMessage());
+        }
+    }
+
+    public function invoicesPassed($id, Request $request) {
+        try {
+            $invoice = Invoice::find($id);
+            $invoice->update([
+                'passed_date' => date('Y-m-d', strtotime($request->passed_date)),
+                'passed_user_id' => $request->passed_user_id,
+            ]);
+            return redirect()->route('invoices.edit', $id)->with('message', 'Invoice passed successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('message', $e->getMessage());
+        }
+    }
+
+    public function invoicesPayment($id, Request $request) {
+        try {
+            $invoice = Invoice::find($id);
+            $invoice->update([
+                'payment_date' => date('Y-m-d', strtotime($request->payment_date)),
+                'payment_user_id' => $request->payment_user_id,
+            ]);
+            return redirect()->route('invoices.edit', $id)->with('message', 'Invoice payment confirmed successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('message', $e->getMessage());
+        }
     }
 }

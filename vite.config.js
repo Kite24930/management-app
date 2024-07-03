@@ -38,6 +38,12 @@ export default defineConfig({
                 reportSend: 'resources/js/reports/reports-send.js',
                 reportChart: 'resources/js/reports/reports-chart.js',
                 reportChartStyles: 'resources/css/reports-chart.css',
+                target: 'resources/js/targets/targets.js',
+                targetStyles: 'resources/css/targets.css',
+                targetEdit: 'resources/js/targets/targets-edit.js',
+                invoice: 'resources/js/invoices/invoices.js',
+                invoiceStyles: 'resources/css/invoices.css',
+                invoiceCreate: 'resources/js/invoices/invoices-create.js',
             },
         },
     }

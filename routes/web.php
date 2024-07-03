@@ -40,8 +40,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/delete/{id}', [MainController::class, 'reportsDelete'])->name('reports.delete');
     Route::post('/reports/task/components', [MainController::class, 'reportsTaskComponents'])->name('reports.task.components');
 
-    Route::get('reports/chart', [MainController::class, 'reportsChart'])->name('reports.chart');
+    Route::get('/reports/chart', [MainController::class, 'reportsChart'])->name('reports.chart');
     Route::get('/reports/chart/data/{date}', [MainController::class, 'monthlyReportSummarizing'])->name('reports.chart.data');
+
+    Route::get('/monthly/targets', [MainController::class, 'monthlyTargets'])->name('monthly.targets');
+    Route::post('/monthly/targets', [MainController::class, 'getMonthlyTargets'])->name('monthly.targets');
+    Route::get('/monthly/targets/edit/{id}/{date}', [MainController::class, 'monthlyTargetsEdit'])->name('monthly.targets.edit');
+    Route::post('/monthly/targets/edit', [MainController::class, 'monthlyTargetEditPost'])->name('monthly.targets.edit');
+
+    Route::get('/invoices', [MainController::class, 'invoices'])->name('invoices');
+    Route::get('/invoices/create', [MainController::class, 'invoicesCreate'])->name('invoices.create');
+    Route::post('/invoices/create', [MainController::class, 'invoicesCreatePost'])->name('invoices.create');
+    Route::get('/invoices/edit/{id}', [MainController::class, 'invoicesEdit'])->name('invoices.edit');
+    Route::post('/invoices/edit/{id}', [MainController::class, 'invoicesEditPost'])->name('invoices.edit');
+    Route::post('/invoices/passed/{id}', [MainController::class, 'invoicesPassed'])->name('invoices.passed');
+    Route::post('/invoices/payment/{id}', [MainController::class, 'invoicesPayment'])->name('invoices.payment');
 
     Route::group(['middleware' => ['role:admin']], function () {
         Route::get('/admin', [MainController::class, 'admin'])->name('admin');

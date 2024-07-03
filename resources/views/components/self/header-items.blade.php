@@ -10,6 +10,12 @@
 <x-self.menu-item route="reports.chart">
     <i class="bi bi-bar-chart mr-2"></i>Monthly Report
 </x-self.menu-item>
+<x-self.menu-item route="monthly.targets">
+    <i class="bi bi-flag mr-2"></i>Monthly Targets
+</x-self.menu-item>
+<x-self.menu-item route="invoices">
+    <i class="bi bi-receipt mr-2"></i>Invoice
+</x-self.menu-item>
 <x-self.menu-item route="dashboard">
     <i class="bi bi-person-circle mr-2"></i>My Page
 </x-self.menu-item>

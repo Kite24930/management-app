@@ -1,0 +1,17 @@
+@import "common.css";
+
+input[type="file"] {
+    &::file-selector-button {
+        background-color: #ddbc9550;
+        color: #b38867;
+        border-color: #b38867;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        &:hover {
+            background-color: #ddbc95;
+            color: #fff;
+        }
+    }
+}
