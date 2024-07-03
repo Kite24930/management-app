@@ -75,6 +75,9 @@ const chartSet = () => {
         },
         options: options,
     });
+
+    console.log(userData);
+    console.log(taskData);
 }
 
 if (Laravel.tasks.length !== 0 && Laravel.users.length !== 0 && Laravel.summary.task_base_hours.length !== 0 && Laravel.summary.user_base_hours.length !== 0) {
