@@ -17,7 +17,7 @@ const chartSet = () => {
         taskList.push(task.title);
         let userHours = [];
         Laravel.users.forEach((user) => {
-            userHours.push(Laravel.summary.task_base_hours[task.title][user.name]);
+            userHours.push(Laravel.summary.task_base_hours[task.title][user.name] || 0);
         });
         userData.push({
             name: task.title,
@@ -28,7 +28,7 @@ const chartSet = () => {
         userList.push(user.name);
         let taskHours = [];
         Laravel.tasks.forEach((task) => {
-            taskHours.push(Laravel.summary.user_base_hours[user.name][task.title]);
+            taskHours.push(Laravel.summary.user_base_hours[user.name][task.title] || 0);
         });
         taskData.push({
             name: user.name,
@@ -75,9 +75,6 @@ const chartSet = () => {
         },
         options: options,
     });
-
-    console.log(taskData);
-    console.log(userData);
 }
 
 if (Laravel.tasks.length !== 0 && Laravel.users.length !== 0 && Laravel.summary.task_base_hours.length !== 0 && Laravel.summary.user_base_hours.length !== 0) {
