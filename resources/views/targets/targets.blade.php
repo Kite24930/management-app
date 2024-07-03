@@ -22,6 +22,7 @@
         window.Laravel.targets = @json($targets);
         window.Laravel.users = @json($users);
         window.Laravel.activeUser = @json($active_user);
+        window.Laravel.period = @json($period);
         console.log(window.Laravel);
     </script>
     @vite(['resources/js/targets/targets.js'])
